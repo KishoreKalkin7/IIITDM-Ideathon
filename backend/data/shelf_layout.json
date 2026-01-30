@@ -1,0 +1,49 @@
+[
+    {
+        "id": "Z1A",
+        "aisle": "1",
+        "zone_type": "Eye Level",
+        "capacity": 20,
+        "current_product_ids": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "traffic_rating": "High"
+    },
+    {
+        "id": "Z1B",
+        "aisle": "1",
+        "zone_type": "Touch Level",
+        "capacity": 30,
+        "current_product_ids": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+        ],
+        "traffic_rating": "High"
+    },
+    {
+        "id": "Z1C",
+        "aisle": "1",
+        "zone_type": "Stretch Level",
+        "capacity": 30,
+        "current_product_ids": [
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20
+        ],
+        "traffic_rating": "Medium"
+    }
+]
