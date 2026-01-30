@@ -1,305 +1,154 @@
-# IIITDM Ideathon 2026 - E-commerce Platform Solutions# Return Product Fraud Detection System
+# Return Product Fraud Detection System
 
+## 🎯 Problem Statement
 
-
-This repository contains multiple innovative features for a comprehensive e-commerce platform, focusing on fraud prevention, customer experience, and operational efficiency.## 🎯 Problem Statement
-
-
-
----E-commerce platforms face massive losses due to return fraud:
-
+E-commerce platforms face massive losses due to return fraud:
 - **Wardrobing**: Customers use products and return them
-
-## 🎯 Project Overview- **Fake Damage Claims**: Customers claim products are damaged with manipulated images
-
+- **Fake Damage Claims**: Customers claim products are damaged with manipulated images
 - **Missing Accountability**: No proof of product condition at delivery
+- **Food Product Misuse**: Customers blame platform after consuming perishable items
 
-A complete e-commerce platform with intelligent features designed to:- **Food Product Misuse**: Customers blame platform after consuming perishable items
-
-- Prevent fraud and abuse
-
-- Enhance customer trust**Industry Impact**: Return fraud costs retailers billions annually, with damaged product claims being the most exploited category.
-
-- Improve operational efficiency
-
-- Increase platform revenue---
-
-
-
----## 💡 Solution Overview
-
-
-
-## 📂 FeaturesA smart backend system that **prevents return fraud before it happens** through:
-
-
-
-### 1. **Return Fraud Detection** 🔍 ✅ COMPLETED### 1. **Mandatory Delivery Confirmation** 
-
-**Status:** Production-Ready MVPEvery customer MUST upload a product image upon delivery. This creates an immutable baseline reference.
-
-
-
-A smart backend system that prevents return fraud through:### 2. **Intelligent Return Processing**
-
-- Mandatory delivery confirmation photosReturns are processed with multi-layer verification:
-
-- AI-generated image detection (from scratch)- ✅ Delivery image existence check
-
-- Duplicate image detection- ✅ Time-based validation for perishable goods
-
-- Category-based return policies- ✅ AI-generated image detection
-
-- Smart decision engine- ✅ Duplicate image detection
-
-
-
-**Technology:** Python, FastAPI, PIL, Pydantic### 3. **Smart Decision Engine**
-
-Automatically approves, flags for review, or rejects returns based on:
-
-**Impact:** 60-80% reduction in return fraud losses- Image authenticity score
-
-- Product category rules
-
-📁 **Location:** `Return Fraud detection/`- Return timing patterns
-
-- Historical fraud indicators
-
-**Quick Start:**
-
-```bash---
-
-cd "Return Fraud detection"
-
-.venv\Scripts\python.exe main.py## 🛡️ How Return Fraud is Reduced
-
-```
-
-### **Before This System:**
-
-**Documentation:** See `Return Fraud detection/README.md````
-
-Customer receives product → No accountability → Claims damage after 2 weeks 
-
----→ Uses AI-generated/edited image → Platform loses money
-
-```
-
-### 2. **[Feature Name]** 🚧 COMING SOON
-
-*Description of next feature*### **With This System:**
-
-```
-
----Customer receives product → MUST upload delivery photo → Creates baseline
-
-→ Customer requests return → System checks:
-
-### 3. **[Feature Name]** 🚧 COMING SOON   ├─ Is delivery photo available? ❌ → REJECT
-
-*Description of next feature*   ├─ Is return image authentic? ❌ → REJECT/REVIEW
-
-   ├─ Is timing suspicious? ❌ → REJECT
-
----   └─ All checks pass? ✅ → APPROVE
-
-```
-
-## 🚀 Getting Started
-
-### **Key Fraud Prevention Mechanisms:**
-
-Each feature is self-contained in its own folder with:
-
-- Complete source code1. **Delivery Photo Mandate**
-
-- Documentation   - Creates accountability at point of delivery
-
-- Test suite   - Prevents later claims like "product was already damaged"
-
-- Setup instructions
-
-2. **Duplicate Detection**
-
-Navigate to the specific feature folder for detailed instructions.   - Compares delivery image hash with return image hash
-
-   - Catches customers reusing the same photo
+**Industry Impact**: Return fraud costs retailers billions annually, with damaged product claims being the most exploited category.
 
 ---
 
-3. **AI-Generated Image Detection** (From Scratch)
-
-## 🏗️ Project Structure   - Resolution analysis (AI images often have unusual dimensions)
-
-   - EXIF metadata verification (AI images lack camera metadata)
-
-```   - File size patterns (edited images have different compression)
-
-IIITDM Ideathon/   - Format analysis (PNG without metadata = suspicious)
-
-├── README.md                          # This file
-
-│4. **Time-Based Rules**
-
-├── Return Fraud detection/            # Feature 1 (COMPLETED)   - Food products: 48-hour return window prevents "ate it and complained" fraud
-
-│   ├── main.py                        # FastAPI application   - Instant returns (<2 hours) flagged as suspicious
-
-│   ├── README.md                      # Complete documentation   - Late claims automatically rejected with clear reasoning
-
-│   ├── requirements.txt               # Dependencies
-
-│   ├── models/                        # Data models5. **Selective Verification**
-
-│   ├── services/                      # Business logic   - Damaged product claims → Full authenticity check
-
-│   ├── utils/                         # Utilities   - Other reasons → Standard process (saves processing time)
-
-│   └── [documentation files]
-
-│---
-
-├── [Feature 2]/                       # Coming soon
-
-│   └── ...## 🏗️ Architecture
-
-│
-
-└── [Feature 3]/                       # Coming soon```
-
-    └── ...┌─────────────────────────────────────────────────────────────┐
-
-```│                      FastAPI Application                     │
-
-├─────────────────────────────────────────────────────────────┤
-
----│  Endpoints:                                                  │
-
-│  • POST /delivery-confirmation  (Mandatory first step)       │
-
-## 🎓 For IIITDM Ideathon Judges│  • POST /request-return        (Fraud-checked returns)       │
-
-│  • GET  /order/{id}/status     (Order information)           │
-
-### Completed Features:└─────────────────────────────────────────────────────────────┘
-
-1. ✅ **Return Fraud Detection** - Production-ready MVP                              │
-
-   - Prevents $24B+ industry problem        ┌─────────────────────┼─────────────────────┐
-
-   - From-scratch AI detection        ▼                     ▼                     ▼
-
-   - Comprehensive testing┌───────────────┐   ┌──────────────────┐   ┌──────────────┐
-
-   - Live demo ready│ Image Service │   │ Fraud Detection  │   │   Decision   │
-
-│               │   │     Service      │   │    Engine    │
-
-### Upcoming Features:│ • Save images │   │ • Authenticity   │   │ • Business   │
-
-- 🚧 Additional e-commerce platform features│ • Extract     │   │   checks         │   │   rules      │
-
-- 🚧 Integration modules│   metadata    │   │ • Fraud scoring  │   │ • Final      │
-
-- 🚧 Analytics dashboard│ • Hash calc   │   │ • From-scratch   │   │   decision   │
-
-└───────────────┘   └──────────────────┘   └──────────────┘
-
----        │                     │                     │
-
-        └─────────────────────┼─────────────────────┘
-
-## 🛠️ Technology Stack                              ▼
-
-                    ┌──────────────────┐
-
-- **Backend:** Python, FastAPI                    │ Storage Manager  │
-
-- **Image Processing:** Pillow (PIL)                    │                  │
-
-- **Data Validation:** Pydantic                    │ • Local files    │
-
-- **Server:** Uvicorn                    │ • JSON records   │
-
-- **Storage:** Local files (cloud-ready)                    │ • Image storage  │
-
-                    └──────────────────┘
-
----```
-
-
-
-## 📈 Business Impact---
-
-
-
-### Return Fraud Detection:## 🚀 How to Run
-
-- **Problem:** $24B+ annual fraud loss in e-commerce
-
-- **Solution:** Preventive fraud detection system### **Prerequisites**
-
-- **Impact:** 60-80% fraud reduction- Python 3.8 or higher
-
-- **ROI:** Saves money from day one- pip (Python package manager)
-
-
-
----### **Step 1: Install Dependencies**
-
-```bash
-
-## 🏆 Competition Highlightspip install -r requirements.txt
-
+## 💡 Solution Overview
+
+A smart backend system that **prevents return fraud before it happens** through:
+
+### 1. **Mandatory Delivery Confirmation** 
+Every customer MUST upload a product image upon delivery. This creates an immutable baseline reference.
+
+### 2. **Intelligent Return Processing**
+Returns are processed with multi-layer verification:
+- ✅ Delivery image existence check
+- ✅ Time-based validation for perishable goods
+- ✅ AI-generated image detection
+- ✅ Duplicate image detection
+
+### 3. **Smart Decision Engine**
+Automatically approves, flags for review, or rejects returns based on:
+- Image authenticity score
+- Product category rules
+- Return timing patterns
+- Historical fraud indicators
+
+---
+
+## 🛡️ How Return Fraud is Reduced
+
+### **Before This System:**
+```
+Customer receives product → No accountability → Claims damage after 2 weeks 
+→ Uses AI-generated/edited image → Platform loses money
 ```
 
-✅ **Production-Ready Code** - Not just concepts
+### **With This System:**
+```
+Customer receives product → MUST upload delivery photo → Creates baseline
+→ Customer requests return → System checks:
+   ├─ Is delivery photo available? ❌ → REJECT
+   ├─ Is return image authentic? ❌ → REJECT/REVIEW
+   ├─ Is timing suspicious? ❌ → REJECT
+   └─ All checks pass? ✅ → APPROVE
+```
 
-✅ **Live Demos Available** - Show real functionality### **Step 2: Run the Server**
+### **Key Fraud Prevention Mechanisms:**
 
-✅ **Clear Business Value** - Solves real problems```bash
+1. **Delivery Photo Mandate**
+   - Creates accountability at point of delivery
+   - Prevents later claims like "product was already damaged"
 
-✅ **Scalable Architecture** - Ready for growthpython main.py
+2. **Duplicate Detection**
+   - Compares delivery image hash with return image hash
+   - Catches customers reusing the same photo
 
-✅ **Comprehensive Documentation** - Professional quality```
+3. **AI-Generated Image Detection** (From Scratch)
+   - Resolution analysis (AI images often have unusual dimensions)
+   - EXIF metadata verification (AI images lack camera metadata)
+   - File size patterns (edited images have different compression)
+   - Format analysis (PNG without metadata = suspicious)
 
+4. **Time-Based Rules**
+   - Food products: 48-hour return window prevents "ate it and complained" fraud
+   - Instant returns (<2 hours) flagged as suspicious
+   - Late claims automatically rejected with clear reasoning
 
+5. **Selective Verification**
+   - Damaged product claims → Full authenticity check
+   - Other reasons → Standard process (saves processing time)
 
----The server will start at: `http://localhost:8000`
+---
 
+## 🏗️ Architecture
 
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      FastAPI Application                     │
+├─────────────────────────────────────────────────────────────┤
+│  Endpoints:                                                  │
+│  • POST /delivery-confirmation  (Mandatory first step)       │
+│  • POST /request-return        (Fraud-checked returns)       │
+│  • GET  /order/{id}/status     (Order information)           │
+└─────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌───────────────┐   ┌──────────────────┐   ┌──────────────┐
+│ Image Service │   │ Fraud Detection  │   │   Decision   │
+│               │   │     Service      │   │    Engine    │
+│ • Save images │   │ • Authenticity   │   │ • Business   │
+│ • Extract     │   │   checks         │   │   rules      │
+│   metadata    │   │ • Fraud scoring  │   │ • Final      │
+│ • Hash calc   │   │ • From-scratch   │   │   decision   │
+└───────────────┘   └──────────────────┘   └──────────────┘
+        │                     │                     │
+        └─────────────────────┼─────────────────────┘
+                              ▼
+                    ┌──────────────────┐
+                    │ Storage Manager  │
+                    │                  │
+                    │ • Local files    │
+                    │ • JSON records   │
+                    │ • Image storage  │
+                    └──────────────────┘
+```
 
-## 📞 Contact### **Step 3: Test the API**
+---
 
+## 🚀 How to Run
 
+### **Prerequisites**
+- Python 3.8 or higher
+- pip (Python package manager)
 
-**Team:** [Your Team Name]**Interactive API Documentation:**
+### **Step 1: Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
 
-**Event:** IIITDM Ideathon 2026Open your browser and visit:
+### **Step 2: Run the Server**
+```bash
+python main.py
+```
 
-**Date:** January 30, 2026- Swagger UI: `http://localhost:8000/docs`
+The server will start at: `http://localhost:8000`
 
+### **Step 3: Test the API**
+
+**Interactive API Documentation:**
+Open your browser and visit:
+- Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
 ---
 
----
-
-## 📄 License
-
 ## 📋 API Usage Examples
-
-This project is created for IIITDM Ideathon 2026.
 
 ### **1. Delivery Confirmation (Mandatory First Step)**
 
----
-
 ```bash
-
-**Built with ❤️ for innovation in e-commerce**curl -X POST "http://localhost:8000/delivery-confirmation" \
-
+curl -X POST "http://localhost:8000/delivery-confirmation" \
   -F "order_id=ORDER123" \
   -F "product_category=electronics" \
   -F "delivery_image=@product_photo.jpg"
