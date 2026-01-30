@@ -1,0 +1,9 @@
+retailer_id,name,location,delivery_charge,rating
+R001,Fresh Mart,Sector 41,0,3.5
+R002,Daily Needs,Sector 18,40,3.8
+R003,Green Grocer,Sector 48,0,4.5
+R004,Quick Stop,Sector 35,0,4.4
+R005,Super Saver,Sector 3,0,3.6
+R006,Organic Harvest,Sector 15,0,4.3
+R007,City Market,Sector 46,80,3.8
+R008,Corner Store,Sector 38,50,4.7
