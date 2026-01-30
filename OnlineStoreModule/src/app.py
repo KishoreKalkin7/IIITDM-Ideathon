@@ -31,6 +31,10 @@ def get_engine():
 
 try:
     engine = get_engine()
+    # Auto-reload if code changed and engine is stale
+    if not hasattr(engine, 'get_retailer_notifications'):
+        st.cache_resource.clear()
+        engine = get_engine()
 except:
     st.error("Engine failed to load.")
     st.stop()
@@ -157,16 +161,77 @@ def show_retailer_dashboard():
     rid = st.session_state['retailer_id']
     retailer_name = engine.get_retailers().set_index('retailer_id').loc[rid]['name']
     
+
     st.sidebar.title(f"🏪 {retailer_name}")
-    menu = st.sidebar.radio("Menu", ["Inventory", "Orders", "Logout"])
+    menu = st.sidebar.radio("Menu", ["Smart Insights", "Inventory", "Orders", "Logout"])
     
     if menu == "Logout": clear_session()
         
+    elif menu == "Smart Insights":
+        st.header("💡 Smart Insights & Notifications")
+        st.info("Personalized suggestions to improve your sales based on user behavior.")
+        
+        notifs = engine.get_retailer_notifications(rid)
+        if not notifs:
+            st.success("Everything looks good! No pending alerts.")
+        else:
+            for n in notifs:
+                color = "red" if n['priority'] == "High" else "orange" if n['priority'] == "Medium" else "blue"
+                with st.container():
+                    st.markdown(f"""
+                    <div style="padding: 15px; border-left: 5px solid {color}; background-color: #262730; margin-bottom: 10px; border-radius: 5px;">
+                        <h4 style="margin:0; color: {color}">{n['priority']} Priority: {n['type'].title()}</h4>
+                        <p style="font-size: 1.1em;">{n['message']}</p>
+                        <p style="font-weight: bold;">Recommended Action: {n['action']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
     elif menu == "Inventory":
         st.header("📦 Inventory Manager")
         
+        # --- Bulk Upload ---
+        with st.expander("📂 Bulk Upload via Excel", expanded=False):
+            st.markdown("Download the template, fill it out, and upload it to update products.")
+            
+            # Template Generator
+            if st.button("📥 Download Template"):
+                df_template = pd.DataFrame(columns=['product_id', 'name', 'category', 'price', 'stock', 'discount', 'active', 'delete_flag'])
+                df_template.to_excel("template.xlsx", index=False)
+                st.success("Template generated! (Normally this would auto-download)")
+                # In real Streamlit we'd use st.download_button
+                
+                # Create a downloadable buffer
+                import io
+                buffer = io.BytesIO()
+                with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+                    df_template.to_excel(writer, index=False)
+                    
+                st.download_button(
+                    label="Download Excel Template",
+                    data=buffer.getvalue(),
+                    file_name="inventory_template.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+
+            uploaded_file = st.file_uploader("Upload Excel File", type=['xlsx'])
+            if uploaded_file:
+                if st.button("Process Bulk Update"):
+                    try:
+                        df = pd.read_excel(uploaded_file)
+                        res = engine.bulk_process_products(rid, df)
+                        st.balloons()
+                        st.subheader("Results")
+                        st.success(f"✅ Added: {res['added']}")
+                        st.info(f"🔄 Updated: {res['updated']}")
+                        st.warning(f"❌ Deleted: {res['deleted']}")
+                        if res['errors']:
+                            st.error("Errors encountered:")
+                            for e in res['errors']: st.write(e)
+                    except Exception as e:
+                        st.error(f"Failed to process file: {str(e)}")
+
         # --- Add New Product ---
-        with st.expander("➕ Add New Product", expanded=False):
+        with st.expander("➕ Add Single Product", expanded=False):
             with st.form("add_prod_form"):
                 col1, col2 = st.columns(2)
                 with col1:

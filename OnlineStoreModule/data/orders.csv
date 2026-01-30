@@ -1,1 +1,2 @@
 order_id,user_id,retailer_id,items_json,total_amount,status,timestamp
+ORD20260130231718,U022,R001,"{""P0016"": {""qty"": 1, ""price"": 751.0, ""name"": ""Daily Item 16 (Premium)""}}",751.0,Placed,2026-01-30T23:17:18.508932

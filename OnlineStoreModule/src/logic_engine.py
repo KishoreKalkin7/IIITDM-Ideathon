@@ -327,5 +327,118 @@ class RecommendationEngine:
         results = pd.DataFrame(scored_products).sort_values('final_score', ascending=False)
         return results.head(top_n)
 
+    def bulk_process_products(self, retailer_id, df):
+        """
+        Process a DataFrame for bulk product updates.
+        Expected columns: product_id (opt), name, category, price, stock, discount, active, delete_flag
+        """
+        results = {"added": 0, "updated": 0, "deleted": 0, "errors": []}
+        
+        for index, row in df.iterrows():
+            try:
+                pid = str(row.get('product_id', '')).strip()
+                # Check for delete flag
+                if row.get('delete_flag', False) or row.get('delete', False):
+                    if pid and self.delete_product(pid):
+                        results["deleted"] += 1
+                    continue
+                    
+                # Prepare values
+                name = row.get('name')
+                cat = row.get('category')
+                price = row.get('price')
+                stock = row.get('stock')
+                discount = row.get('discount', 0)
+                active = row.get('active', True)
+                
+                # Update existing
+                if pid and pid in self.products['product_id'].values:
+                    # Validate retailer owns it
+                    current = self.products[self.products['product_id'] == pid].iloc[0]
+                    if current['retailer_id'] != retailer_id:
+                        results["errors"].append(f"Row {index}: Permission denied for {pid}")
+                        continue
+                        
+                    self.update_product_stock_price(pid, stock, price, discount, active)
+                    results["updated"] += 1
+                    
+                # Create new
+                elif name and cat and price is not None:
+                    # Basic validation
+                    if cat not in self.categories:
+                        results["errors"].append(f"Row {index}: Invalid category '{cat}'")
+                        continue
+                        
+                    self.add_product(retailer_id, name, cat, float(price), int(stock or 0))
+                    results["added"] += 1
+                else:
+                    results["errors"].append(f"Row {index}: Missing required fields")
+                    
+            except Exception as e:
+                results["errors"].append(f"Row {index}: Error {str(e)}")
+                
+        return results
+
+    def get_retailer_notifications(self, retailer_id):
+        """
+        Generates insights/notifications for the retailer based on Intermediary logic.
+        Analyzes:
+        1. Low Stock
+        2. Category Trends (Global vs Local)
+        3. High Interest / Low Conversion (Views > Purchase)
+        4. Specific User Affinities (Personalized Experience)
+        """
+        notifications = []
+        
+        # 1. Low Stock Ratio
+        my_products = self.get_retailer_products(retailer_id)
+        low_stock = my_products[my_products['stock_count'] < 5]
+        for _, p in low_stock.iterrows():
+            notifications.append({
+                "type": "alert",
+                "priority": "High",
+                "message": f"Low Stock: {p['name']} has only {p['stock_count']} left.",
+                "action": "Restock"
+            })
+            
+        # 2. Demand/Trend Analysis (Simulated Intermediary Logic)
+        # Find categories with high views in last 24h
+        recent_interactions = self.interactions
+        if not recent_interactions.empty:
+            cat_views = recent_interactions[recent_interactions['action'] == 'view'].merge(
+                self.products[['product_id', 'category']], on='product_id'
+            )['category'].value_counts()
+            
+            if not cat_views.empty:
+                top_cat = cat_views.index[0]
+                notifications.append({
+                    "type": "insight",
+                    "priority": "Medium",
+                    "message": f"Market Trend: '{top_cat}' is the most viewed category today.",
+                    "action": f"Promote {top_cat} items"
+                })
+
+        # 3. User Specific Opportunities (The 'Personalized' part)
+        # Identify users who frequently view this retailer's category but haven't bought recently
+        # Simplify: Pick a random active user and expose their affinity as an 'Lead'
+        # In a real app, this would be more complex and privacy-safe.
+        if not self.users.empty:
+            # Pick a heavy user
+            active_uids = self.interactions['user_id'].unique()
+            if len(active_uids) > 0:
+                target_uid = active_uids[0] # Just pick first for demo
+                affinity = self.get_user_affinity(target_uid)
+                # Find their top cat
+                fav_cat = max(affinity, key=affinity.get)
+                
+                notifications.append({
+                    "type": "opportunity",
+                    "priority": "Low",
+                    "message": f"Customer Insight: User {target_uid} loves '{fav_cat}'.",
+                    "action": f"Create {fav_cat} Bundle"
+                })
+                
+        return notifications
+
 if __name__ == "__main__":
     print("Logic Engine initialized")
