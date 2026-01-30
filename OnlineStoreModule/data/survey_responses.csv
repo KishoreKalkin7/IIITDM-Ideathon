@@ -1,0 +1,4 @@
+user_id,preferred_categories,shopping_intent,return_sensitivity,age,gender,dietary_preferences
+NEW_USER,Junk,Snacks,Medium,,,
+U023,Junk,Snacks|Health-focused,Medium,20.0,Female,Vegetarian
+U024,Junk,Health-focused,Medium,20.0,Male,Vegetarian|Gluten-Free
