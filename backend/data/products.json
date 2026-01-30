@@ -1,0 +1,272 @@
+[
+  {
+    "id": 1,
+    "name": "Rice 5kg",
+    "macro_category": "Grocery",
+    "micro_category": "Staples",
+    "price": 85.74,
+    "dimensions": "18x35x25 cm",
+    "margin": 13.19
+  },
+  {
+    "id": 2,
+    "name": "Wheat Flour 1kg",
+    "macro_category": "Grocery",
+    "micro_category": "Staples",
+    "price": 115.72,
+    "dimensions": "29x24x15 cm",
+    "margin": 14.93
+  },
+  {
+    "id": 3,
+    "name": "Sugar 1kg",
+    "macro_category": "Grocery",
+    "micro_category": "Staples",
+    "price": 272.7,
+    "dimensions": "13x40x6 cm",
+    "margin": 17.83
+  },
+  {
+    "id": 4,
+    "name": "Salt 1kg",
+    "macro_category": "Grocery",
+    "micro_category": "Staples",
+    "price": 331.5,
+    "dimensions": "28x28x21 cm",
+    "margin": 11.52
+  },
+  {
+    "id": 5,
+    "name": "Cooking Oil 1L",
+    "macro_category": "Grocery",
+    "micro_category": "Staples",
+    "price": 471.66,
+    "dimensions": "36x40x10 cm",
+    "margin": 24.02
+  },
+  {
+    "id": 6,
+    "name": "Toor Dal 1kg",
+    "macro_category": "Grocery",
+    "micro_category": "Staples",
+    "price": 464.26,
+    "dimensions": "22x32x9 cm",
+    "margin": 13.56
+  },
+  {
+    "id": 7,
+    "name": "Milk 1L",
+    "macro_category": "Dairy",
+    "micro_category": "Milk",
+    "price": 433.53,
+    "dimensions": "38x10x9 cm",
+    "margin": 19.32
+  },
+  {
+    "id": 8,
+    "name": "Curd 500g",
+    "macro_category": "Dairy",
+    "micro_category": "Milk",
+    "price": 457.09,
+    "dimensions": "30x20x13 cm",
+    "margin": 23.02
+  },
+  {
+    "id": 9,
+    "name": "Butter 200g",
+    "macro_category": "Dairy",
+    "micro_category": "Dairy Products",
+    "price": 445.94,
+    "dimensions": "19x39x14 cm",
+    "margin": 22.61
+  },
+  {
+    "id": 10,
+    "name": "Cheese Slices",
+    "macro_category": "Dairy",
+    "micro_category": "Dairy Products",
+    "price": 205.41,
+    "dimensions": "17x25x5 cm",
+    "margin": 22.1
+  },
+  {
+    "id": 11,
+    "name": "Bread Loaf",
+    "macro_category": "Bakery",
+    "micro_category": "Bread",
+    "price": 330.91,
+    "dimensions": "26x25x6 cm",
+    "margin": 14.91
+  },
+  {
+    "id": 12,
+    "name": "Burger Buns",
+    "macro_category": "Bakery",
+    "micro_category": "Bread",
+    "price": 174.46,
+    "dimensions": "34x27x21 cm",
+    "margin": 7.4
+  },
+  {
+    "id": 13,
+    "name": "Eggs 12 Pack",
+    "macro_category": "Poultry",
+    "micro_category": "Eggs",
+    "price": 77.54,
+    "dimensions": "26x14x14 cm",
+    "margin": 23.02
+  },
+  {
+    "id": 14,
+    "name": "Chicken Breast 500g",
+    "macro_category": "Meat",
+    "micro_category": "Chicken",
+    "price": 478.93,
+    "dimensions": "23x21x15 cm",
+    "margin": 16.16
+  },
+  {
+    "id": 15,
+    "name": "Frozen Peas",
+    "macro_category": "Frozen",
+    "micro_category": "Vegetables",
+    "price": 120.26,
+    "dimensions": "14x8x10 cm",
+    "margin": 7.33
+  },
+  {
+    "id": 16,
+    "name": "Potato Chips",
+    "macro_category": "Snacks",
+    "micro_category": "Chips",
+    "price": 470.65,
+    "dimensions": "15x8x23 cm",
+    "margin": 23.54
+  },
+  {
+    "id": 17,
+    "name": "Biscuits Pack",
+    "macro_category": "Snacks",
+    "micro_category": "Biscuits",
+    "price": 247.92,
+    "dimensions": "14x28x11 cm",
+    "margin": 11.0
+  },
+  {
+    "id": 18,
+    "name": "Chocolate Bar",
+    "macro_category": "Snacks",
+    "micro_category": "Chocolate",
+    "price": 293.1,
+    "dimensions": "13x15x25 cm",
+    "margin": 16.56
+  },
+  {
+    "id": 19,
+    "name": "Soft Drink 1L",
+    "macro_category": "Beverages",
+    "micro_category": "Cold Drinks",
+    "price": 394.67,
+    "dimensions": "13x36x8 cm",
+    "margin": 6.17
+  },
+  {
+    "id": 20,
+    "name": "Fruit Juice 1L",
+    "macro_category": "Beverages",
+    "micro_category": "Juices",
+    "price": 443.28,
+    "dimensions": "9x14x10 cm",
+    "margin": 23.52
+  },
+  {
+    "id": 21,
+    "name": "Tea Powder 250g",
+    "macro_category": "Beverages",
+    "micro_category": "Tea",
+    "price": 239.79,
+    "dimensions": "20x34x29 cm",
+    "margin": 5.07
+  },
+  {
+    "id": 22,
+    "name": "Coffee Powder 200g",
+    "macro_category": "Beverages",
+    "micro_category": "Coffee",
+    "price": 127.46,
+    "dimensions": "18x14x9 cm",
+    "margin": 9.58
+  },
+  {
+    "id": 23,
+    "name": "Shampoo 180ml",
+    "macro_category": "Personal Care",
+    "micro_category": "Hair Care",
+    "price": 155.76,
+    "dimensions": "24x38x15 cm",
+    "margin": 11.18
+  },
+  {
+    "id": 24,
+    "name": "Soap Bar",
+    "macro_category": "Personal Care",
+    "micro_category": "Bath",
+    "price": 365.46,
+    "dimensions": "8x13x12 cm",
+    "margin": 20.95
+  },
+  {
+    "id": 25,
+    "name": "Toothpaste",
+    "macro_category": "Personal Care",
+    "micro_category": "Oral Care",
+    "price": 383.88,
+    "dimensions": "13x31x8 cm",
+    "margin": 16.69
+  },
+  {
+    "id": 26,
+    "name": "Detergent Powder 1kg",
+    "macro_category": "Household",
+    "micro_category": "Cleaning",
+    "price": 489.78,
+    "dimensions": "30x32x5 cm",
+    "margin": 13.09
+  },
+  {
+    "id": 27,
+    "name": "Dishwash Liquid",
+    "macro_category": "Household",
+    "micro_category": "Cleaning",
+    "price": 438.8,
+    "dimensions": "26x15x13 cm",
+    "margin": 15.68
+  },
+  {
+    "id": 28,
+    "name": "Floor Cleaner",
+    "macro_category": "Household",
+    "micro_category": "Cleaning",
+    "price": 399.85,
+    "dimensions": "30x37x23 cm",
+    "margin": 14.14
+  },
+  {
+    "id": 29,
+    "name": "Tissue Paper Pack",
+    "macro_category": "Household",
+    "micro_category": "Paper",
+    "price": 204.27,
+    "dimensions": "36x13x24 cm",
+    "margin": 17.24
+  },
+  {
+    "id": 30,
+    "name": "Hand Sanitizer",
+    "macro_category": "Personal Care",
+    "micro_category": "Hygiene",
+    "price": 62.61,
+    "dimensions": "11x36x19 cm",
+    "margin": 9.12
+  }
+]
