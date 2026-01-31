@@ -1,59 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import Overview from './components/Overview';
-import Recommendations from './components/Recommendations';
-import ManageData from './components/ManageData';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import RetailerDashboard from "./pages/RetailerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
-function App() {
-  const [activeTab, setActiveTab] = useState('overview');
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
-      {/* Navbar */}
-      <nav className="bg-gray-800 border-b border-gray-700 p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            Retail Intelligence
-          </h1>
-          <div className="space-x-4">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`px-4 py-2 rounded-lg transition-colors ${activeTab === 'overview'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                }`}
-            >
-              Live Store Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('recommendations')}
-              className={`px-4 py-2 rounded-lg transition-colors ${activeTab === 'recommendations'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                }`}
-            >
-              Shelf Optimization
-            </button>
-            <button
-              onClick={() => setActiveTab('manage')}
-              className={`px-4 py-2 rounded-lg transition-colors ${activeTab === 'manage'
-                  ? 'bg-green-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                }`}
-            >
-              Manage Data
-            </button>
-          </div>
-        </div>
-      </nav>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<Auth />} />
 
-      {/* Main Content */}
-      <main className="container mx-auto p-6">
-        {activeTab === 'overview' && <Overview />}
-        {activeTab === 'recommendations' && <Recommendations />}
-        {activeTab === 'manage' && <ManageData />}
-      </main>
-    </div>
+        {/* Aligned Routes to use unified Auth */}
+        <Route path="/customer/login" element={<Navigate to="/auth" />} />
+        <Route path="/retailer/login" element={<Navigate to="/auth" />} />
+        <Route path="/admin/login" element={<Navigate to="/auth" />} />
+
+        {/* Dashboards */}
+        <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+        <Route path="/retailer/dashboard" element={<RetailerDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

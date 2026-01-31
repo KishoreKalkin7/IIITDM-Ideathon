@@ -1,0 +1,7 @@
+order_id,user_id,retailer_id,items_json,total_amount,status,timestamp
+ORD20260130231718,U022,R001,"{""P0016"": {""qty"": 1, ""price"": 751.0, ""name"": ""Daily Item 16 (Premium)""}}",751.0,Placed,2026-01-30T23:17:18.508932
+ORD20260131053812,U001,R001,"{""P0049"": {""qty"": 1, ""price"": 659.0, ""name"": ""Daily Item 49 (Premium)""}, ""P0150"": {""qty"": 1, ""price"": 53.46, ""name"": ""Snack 150 (Fresh)""}}",712.46,Placed,2026-01-31T05:38:12.857435
+ORD20260131055209,U001,R001,"{""P0023"": {""qty"": 1, ""price"": 72.0, ""name"": ""Drink 23 (Standard)""}, ""P0150"": {""qty"": 1, ""price"": 53.46, ""name"": ""Snack 150 (Fresh)""}}",125.46,Placed,2026-01-31T05:52:09.671908
+ORD20260131060340,U001,R001,"{""P0150"": {""qty"": 1, ""price"": 53.46, ""name"": ""Snack 150 (Fresh)""}}",53.46,Placed,2026-01-31T06:03:40.418569
+ORD20260131063702,U001,R001,"{""P0049"": {""qty"": 1, ""price"": 659.0, ""name"": ""Daily Item 49 (Premium)""}, ""P0023"": {""qty"": 1, ""price"": 72.0, ""name"": ""Drink 23 (Standard)""}}",731.0,Placed,2026-01-31T06:37:02.918911
+ORD20260131070537,U001,R001,"{""P0049"": {""qty"": 1, ""price"": 659.0, ""name"": ""Daily Item 49 (Premium)""}, ""P0023"": {""qty"": 1, ""price"": 72.0, ""name"": ""Drink 23 (Standard)""}}",731.0,Placed,2026-01-31T07:05:37.580733

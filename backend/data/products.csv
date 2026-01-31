@@ -1,0 +1,166 @@
+product_id,retailer_id,name,category,price,stock_count,discount_pct,is_essential,active
+P0001,R001,Daily Item 1 (Premium),Essentials,463.0,37,25,1,True
+P0002,R001,Drink 2 (Standard),Beverages,61.0,43,14,0,True
+P0003,R001,Daily Item 3 (Fresh),Essentials,525.0,15,19,1,True
+P0004,R001,Snack 4 (Pack),Junk,70.0,43,0,0,True
+P0005,R001,Daily Item 5 (Pack),Essentials,554.0,2,0,1,True
+P0006,R001,Salad/Fruit 6 (Standard),Healthy,120.0,8,8,1,True
+P0007,R001,Drink 7 (Standard),Beverages,53.0,49,0,0,True
+P0008,R001,Snack 8 (Pack),Junk,72.0,1,0,0,True
+P0009,R001,Salad/Fruit 9 (Premium),Healthy,1055.0,6,0,1,True
+P0010,R001,Daily Item 10 (Premium),Essentials,84.0,13,0,1,True
+P0011,R001,Snack 11 (Fresh),Junk,379.0,3,0,0,True
+P0012,R001,Snack 12 (Premium),Junk,73.0,41,0,0,True
+P0013,R001,Drink 13 (Pack),Beverages,230.0,17,0,0,True
+P0014,R001,Snack 14 (Pack),Junk,221.0,35,0,0,True
+P0015,R001,Daily Item 15 (Pack),Essentials,320.0,7,0,1,True
+P0016,R001,Daily Item 16 (Premium),Essentials,751.0,38,0,1,True
+P0017,R001,Drink 17 (Fresh),Beverages,92.0,23,0,0,True
+P0018,R001,Daily Item 18 (Premium),Essentials,237.0,44,19,1,True
+P0019,R001,Drink 19 (Fresh),Beverages,104.0,24,0,0,True
+P0020,R001,Daily Item 20 (Premium),Essentials,178.0,43,15,1,True
+P0021,R002,Salad/Fruit 21 (Pack),Healthy,692.0,7,0,1,True
+P0022,R002,Drink 22 (Pack),Beverages,270.0,40,0,0,True
+P0023,R002,Drink 23 (Standard),Beverages,72.0,44,0,0,True
+P0024,R002,Snack 24 (Premium),Junk,235.0,36,0,0,True
+P0025,R002,Daily Item 25 (Premium),Essentials,775.0,26,0,1,True
+P0026,R002,Salad/Fruit 26 (Standard),Healthy,712.0,46,0,1,True
+P0027,R002,Drink 27 (Pack),Beverages,44.0,25,18,0,True
+P0028,R002,Salad/Fruit 28 (Premium),Healthy,894.0,8,0,1,True
+P0029,R002,Snack 29 (Standard),Junk,61.0,12,11,0,True
+P0030,R002,Drink 30 (Premium),Beverages,91.0,31,0,0,True
+P0031,R002,Drink 31 (Fresh),Beverages,270.0,44,0,0,True
+P0032,R002,Drink 32 (Pack),Beverages,75.0,12,23,0,True
+P0033,R002,Snack 33 (Fresh),Junk,303.0,1,0,0,True
+P0034,R002,Snack 34 (Pack),Junk,153.0,27,0,0,True
+P0035,R002,Daily Item 35 (Standard),Essentials,389.0,29,0,1,True
+P0036,R002,Daily Item 36 (Pack),Essentials,555.0,27,0,1,True
+P0037,R002,Snack 37 (Pack),Junk,244.0,0,29,0,True
+P0038,R002,Daily Item 38 (Standard),Essentials,794.0,2,12,1,True
+P0039,R002,Salad/Fruit 39 (Pack),Healthy,748.0,36,0,1,True
+P0040,R002,Snack 40 (Premium),Junk,191.0,23,0,0,True
+P0041,R003,Snack 41 (Standard),Junk,179.0,31,0,0,True
+P0042,R003,Daily Item 42 (Standard),Essentials,162.0,48,16,1,True
+P0043,R003,Snack 43 (Standard),Junk,314.0,1,0,0,True
+P0044,R003,Drink 44 (Fresh),Beverages,152.0,16,6,0,True
+P0045,R003,Snack 45 (Fresh),Junk,239.0,22,5,0,True
+P0046,R003,Drink 46 (Pack),Beverages,165.0,1,0,0,True
+P0047,R003,Snack 47 (Standard),Junk,179.0,5,8,0,True
+P0048,R003,Salad/Fruit 48 (Pack),Healthy,302.0,16,0,1,True
+P0049,R003,Daily Item 49 (Premium),Essentials,659.0,2,0,1,True
+P0050,R003,Salad/Fruit 50 (Standard),Healthy,851.0,15,0,1,True
+P0051,R003,Daily Item 51 (Premium),Essentials,236.0,5,0,1,True
+P0052,R003,Salad/Fruit 52 (Pack),Healthy,759.0,35,7,1,True
+P0053,R003,Salad/Fruit 53 (Fresh),Healthy,246.0,19,0,1,True
+P0054,R003,Daily Item 54 (Pack),Essentials,538.0,32,0,1,True
+P0055,R003,Salad/Fruit 55 (Premium),Healthy,437.0,39,29,1,True
+P0056,R003,Drink 56 (Standard),Beverages,190.0,30,0,0,True
+P0057,R003,Salad/Fruit 57 (Pack),Healthy,362.0,15,0,1,True
+P0058,R003,Drink 58 (Standard),Beverages,99.0,48,20,0,True
+P0059,R003,Snack 59 (Fresh),Junk,159.0,4,0,0,True
+P0060,R003,Salad/Fruit 60 (Fresh),Healthy,1114.0,8,23,1,True
+P0061,R004,Daily Item 61 (Fresh),Essentials,257.0,2,0,1,True
+P0062,R004,Snack 62 (Standard),Junk,139.0,32,0,0,True
+P0063,R004,Salad/Fruit 63 (Pack),Healthy,203.0,19,0,1,True
+P0064,R004,Daily Item 64 (Standard),Essentials,559.0,24,0,1,True
+P0065,R004,Drink 65 (Standard),Beverages,233.0,34,0,0,True
+P0066,R004,Drink 66 (Pack),Beverages,200.0,3,25,0,True
+P0067,R004,Daily Item 67 (Fresh),Essentials,553.0,7,0,1,True
+P0068,R004,Drink 68 (Fresh),Beverages,167.0,32,0,0,True
+P0069,R004,Salad/Fruit 69 (Pack),Healthy,569.0,21,10,1,True
+P0070,R004,Snack 70 (Standard),Junk,384.0,7,0,0,True
+P0071,R004,Snack 71 (Standard),Junk,296.0,29,0,0,True
+P0072,R004,Salad/Fruit 72 (Fresh),Healthy,1059.0,32,20,1,True
+P0073,R004,Salad/Fruit 73 (Premium),Healthy,646.0,48,16,1,True
+P0074,R004,Daily Item 74 (Premium),Essentials,207.0,28,10,1,True
+P0075,R004,Salad/Fruit 75 (Premium),Healthy,1160.0,23,0,1,True
+P0076,R004,Snack 76 (Standard),Junk,200.0,30,0,0,True
+P0077,R004,Drink 77 (Standard),Beverages,155.0,20,5,0,True
+P0078,R004,Daily Item 78 (Fresh),Essentials,372.0,17,0,1,True
+P0079,R004,Salad/Fruit 79 (Premium),Healthy,665.0,2,0,1,True
+P0080,R004,Daily Item 80 (Fresh),Essentials,675.0,31,0,1,True
+P0081,R005,Salad/Fruit 81 (Fresh),Healthy,1061.0,26,21,1,True
+P0082,R005,Daily Item 82 (Fresh),Essentials,442.0,42,0,1,True
+P0083,R005,Salad/Fruit 83 (Pack),Healthy,858.0,25,0,1,True
+P0084,R005,Drink 84 (Premium),Beverages,52.0,6,0,0,True
+P0085,R005,Drink 85 (Premium),Beverages,59.0,0,18,0,True
+P0086,R005,Daily Item 86 (Pack),Essentials,703.0,11,0,1,True
+P0087,R005,Salad/Fruit 87 (Pack),Healthy,1215.0,33,27,1,True
+P0088,R005,Salad/Fruit 88 (Premium),Healthy,953.0,24,26,1,True
+P0089,R005,Snack 89 (Pack),Junk,77.0,21,14,0,True
+P0090,R005,Snack 90 (Fresh),Junk,290.0,42,5,0,True
+P0091,R005,Daily Item 91 (Standard),Essentials,102.0,43,0,1,True
+P0092,R005,Salad/Fruit 92 (Fresh),Healthy,1319.0,5,24,1,True
+P0093,R005,Snack 93 (Premium),Junk,66.0,34,0,0,True
+P0094,R005,Daily Item 94 (Pack),Essentials,705.0,12,0,1,True
+P0095,R005,Snack 95 (Standard),Junk,177.0,18,0,0,True
+P0096,R005,Salad/Fruit 96 (Premium),Healthy,1181.0,25,25,1,True
+P0097,R005,Snack 97 (Pack),Junk,298.0,8,0,0,True
+P0098,R005,Drink 98 (Standard),Beverages,97.0,0,0,0,True
+P0099,R005,Daily Item 99 (Standard),Essentials,687.0,47,17,1,True
+P0100,R005,Drink 100 (Pack),Beverages,228.0,38,0,0,True
+P0101,R006,Drink 101 (Standard),Beverages,286.0,2,20,0,True
+P0102,R006,Salad/Fruit 102 (Premium),Healthy,1096.0,21,18,1,True
+P0103,R006,Daily Item 103 (Pack),Essentials,118.0,46,18,1,True
+P0104,R006,Snack 104 (Fresh),Junk,223.0,15,20,0,True
+P0105,R006,Drink 105 (Premium),Beverages,78.0,35,9,0,True
+P0106,R006,Salad/Fruit 106 (Premium),Healthy,621.0,4,0,1,True
+P0107,R006,Daily Item 107 (Pack),Essentials,272.0,9,0,1,True
+P0108,R006,Snack 108 (Pack),Junk,115.0,0,0,0,True
+P0109,R006,Drink 109 (Standard),Beverages,43.0,15,27,0,True
+P0110,R006,Snack 110 (Premium),Junk,179.0,26,0,0,True
+P0111,R006,Daily Item 111 (Standard),Essentials,739.0,34,0,1,True
+P0112,R006,Drink 112 (Premium),Beverages,218.0,42,0,0,True
+P0113,R006,Salad/Fruit 113 (Premium),Healthy,1291.0,9,17,1,True
+P0114,R006,Daily Item 114 (Fresh),Essentials,656.0,45,23,1,True
+P0115,R006,Snack 115 (Premium),Junk,54.0,22,12,0,True
+P0116,R006,Drink 116 (Standard),Beverages,129.0,33,11,0,True
+P0117,R006,Daily Item 117 (Standard),Essentials,550.0,49,0,1,True
+P0118,R006,Drink 118 (Fresh),Beverages,256.0,20,0,0,True
+P0119,R006,Daily Item 119 (Standard),Essentials,443.0,36,0,1,True
+P0120,R006,Daily Item 120 (Pack),Essentials,788.0,48,0,1,True
+P0121,R007,Daily Item 121 (Fresh),Essentials,145.0,23,0,1,True
+P0122,R007,Daily Item 122 (Standard),Essentials,86.0,11,0,1,True
+P0123,R007,Drink 123 (Standard),Beverages,256.0,34,21,0,True
+P0124,R007,Drink 124 (Pack),Beverages,101.0,19,0,0,True
+P0125,R007,Snack 125 (Fresh),Junk,206.0,18,0,0,True
+P0126,R007,Daily Item 126 (Pack),Essentials,494.0,40,0,1,True
+P0127,R007,Drink 127 (Fresh),Beverages,245.0,30,0,0,True
+P0128,R007,Salad/Fruit 128 (Fresh),Healthy,1490.0,15,0,1,True
+P0129,R007,Salad/Fruit 129 (Premium),Healthy,495.0,24,0,1,True
+P0130,R007,Drink 130 (Standard),Beverages,92.0,22,0,0,True
+P0131,R007,Salad/Fruit 131 (Standard),Healthy,208.0,41,0,1,True
+P0132,R007,Snack 132 (Premium),Junk,242.0,4,0,0,True
+P0133,R007,Drink 133 (Pack),Beverages,274.0,10,16,0,True
+P0134,R007,Drink 134 (Premium),Beverages,113.0,43,0,0,True
+P0135,R007,Snack 135 (Standard),Junk,26.0,45,0,0,True
+P0136,R007,Snack 136 (Standard),Junk,302.0,1,9,0,True
+P0137,R007,Snack 137 (Premium),Junk,358.0,7,0,0,True
+P0138,R007,Drink 138 (Premium),Beverages,184.0,6,0,0,True
+P0139,R007,Daily Item 139 (Premium),Essentials,119.0,30,0,1,True
+P0140,R007,Daily Item 140 (Standard),Essentials,231.0,38,0,1,True
+P0141,R008,Snack 141 (Premium),Junk,38.0,38,0,0,True
+P0142,R008,Drink 142 (Premium),Beverages,180.0,49,0,0,True
+P0143,R008,Snack 143 (Pack),Junk,167.0,27,0,0,True
+P0144,R008,Salad/Fruit 144 (Premium),Healthy,1484.0,38,0,1,True
+P0145,R008,Drink 145 (Standard),Beverages,229.0,48,5,0,True
+P0146,R008,Snack 146 (Pack),Junk,136.0,5,0,0,True
+P0147,R008,Drink 147 (Fresh),Beverages,199.0,44,25,0,True
+P0148,R008,Daily Item 148 (Standard),Essentials,262.0,10,0,1,True
+P0149,R008,Daily Item 149 (Standard),Essentials,276.0,18,0,1,True
+P0150,R008,Snack 150 (Fresh),Junk,66.0,37,19,0,True
+P0151,R008,Salad/Fruit 151 (Standard),Healthy,1496.0,2,0,1,True
+P0152,R008,Drink 152 (Fresh),Beverages,51.0,9,0,0,True
+P0153,R008,Daily Item 153 (Fresh),Essentials,407.0,11,25,1,True
+P0154,R008,Daily Item 154 (Standard),Essentials,171.0,27,0,1,True
+P0155,R008,Daily Item 155 (Premium),Essentials,747.0,49,9,1,True
+P0156,R008,Drink 156 (Premium),Beverages,267.0,26,0,0,True
+P0157,R008,Drink 157 (Fresh),Beverages,240.0,32,0,0,True
+P0158,R008,Drink 158 (Pack),Beverages,259.0,47,18,0,True
+P0159,R008,Salad/Fruit 159 (Fresh),Healthy,1376.0,5,0,1,True
+P0160,R008,Daily Item 160 (Fresh),Essentials,758.0,46,0,1,True
+P0161,R009,Bulk Item 1,Essentials,50.0,100,0,0,True
+P0162,R009,Bulk Item 2,Junk,20.0,50,0,0,True
+P0163,R010,Bulk Item 1,Essentials,999.0,10,0,0,True
+P0164,R010,Bulk Item 2,Junk,20.0,50,0,0,True
+P0165,R001,Campa,Beverages,20.0,37,0,0,True
