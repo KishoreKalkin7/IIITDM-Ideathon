@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
-import { Lock, Mail, Chrome, ArrowRight, ShoppingBag, ShieldCheck, Store } from "lucide-react";
+import { Lock, Mail, Chrome, ArrowRight, ShoppingBag, ShieldCheck, Store, Eye, EyeOff } from "lucide-react";
 
 export default function AuthPage() {
     const [role, setRole] = useState("customer"); // customer, retailer, admin
     const [mode, setMode] = useState("login"); // login, signup
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleGoogle = () => {
         setLoading(true);
@@ -33,11 +34,11 @@ export default function AuthPage() {
         const data = new FormData(e.target);
         const email = data.get("email");
         const password = data.get("password");
+        const name = data.get("name");
 
         setLoading(true);
         try {
-            if (role === 'admin') {
-                // Admin mock for demo or check
+            if (role === 'admin' && mode === 'login') {
                 if (password === 'admin123') {
                     localStorage.setItem("role", "admin");
                     navigate("/admin/dashboard");
@@ -45,9 +46,14 @@ export default function AuthPage() {
                 }
             }
 
-            const res = await api.fetchAPI("/users/login", {
+            const endpoint = mode === 'login' ? "/users/login" : "/users/signup";
+            const body = mode === 'login'
+                ? { user_id: email, password }
+                : { name: name || email, user_id: email, password, role };
+
+            const res = await api.fetchAPI(endpoint, {
                 method: "POST",
-                body: JSON.stringify({ user_id: email, password })
+                body: JSON.stringify(body)
             });
 
             if (res.status === "success") {
@@ -57,7 +63,7 @@ export default function AuthPage() {
                 navigate(`/${role}/dashboard`);
             }
         } catch (err) {
-            alert(err.message || "Login failed. Try U001 / pass123");
+            alert(err.message || "Failed. Try U001 / pass123");
         } finally {
             setLoading(false);
         }
@@ -128,20 +134,33 @@ export default function AuthPage() {
                             <label className="text-xs text-neutral-500 ml-1">Email Address</label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-3.5 text-neutral-500" size={18} />
-                                <input type="email" placeholder="name@example.com" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-12 pr-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
+                                <input name="email" type="email" placeholder="name@example.com" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-12 pr-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
                             </div>
                         </div>
                         {mode === 'signup' && (
                             <div className="space-y-2">
                                 <label className="text-xs text-neutral-500 ml-1">Full Name</label>
-                                <input type="text" placeholder="John Doe" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 px-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
+                                <input name="name" type="text" placeholder="John Doe" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 px-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
                             </div>
                         )}
                         <div className="space-y-2">
                             <label className="text-xs text-neutral-500 ml-1">Password</label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-3.5 text-neutral-500" size={18} />
-                                <input type="password" placeholder="••••••••" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-12 pr-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
+                                <input
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-12 pr-12 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-3.5 text-neutral-500 hover:text-white transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                             </div>
                         </div>
 

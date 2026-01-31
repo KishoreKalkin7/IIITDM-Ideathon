@@ -1,4 +1,4 @@
 request_id,user_id,order_id,product_id,retailer_id,reason,condition,image_path,status,admin_notes,timestamp,fraud_score
-RET20260131062232,U001,ORD20260131053812,P0049,R001,product has been broken,Good,,Pending,,2026-01-31T06:22:32.449991,
-RET20260131063732,U001,ORD20260131053812,P0049,R001,damaged,poor,,Pending,,2026-01-31T06:37:32.903130,0.0
-RET20260131064917,U001,ORD20260131060340,P0150,R001,Damaged Product,Good (Seal Unbroken),20,C:\Users\Vichu dog\Desktop\Program Files\Smart_Retail\IIITDM-Ideathon\backend\data\return_images\ORD20260131060340_P0150_20260131064917.jpg,Pending,
+RET20260131062232,U001,ORD20260131053812,P0049,R001,product has been broken,Good,0.0,Approved,no,2026-01-31T06:22:32.449991,0.0
+RET20260131063732,U001,ORD20260131053812,P0049,R001,damaged,poor,0.0,Rejected,yes,2026-01-31T06:37:32.903130,0.0
+RET20260131064917,U001,ORD20260131060340,P0150,R001,Damaged Product,Good (Seal Unbroken),20.0,C:\Users\Vichu dog\Desktop\Program Files\Smart_Retail\IIITDM-Ideathon\backend\data\return_images\ORD20260131060340_P0150_20260131064917.jpg,Pending,0,0.0

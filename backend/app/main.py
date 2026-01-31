@@ -73,16 +73,20 @@ def read_root():
 def get_products():
     return services.load_products()
 
-@app.get("/shelf-layout", response_model=List[ShelfZone])
-def get_shelf_layout():
+@app.get("/shelf-layout")
+def get_shelf_layout(retailer_id: Optional[str] = None):
+    if retailer_id:
+        return recommender.get_retailer_shelf(retailer_id)
     return services.load_shelf_layout()
 
 @app.get("/analytics/performance")
 def get_analytics():
     return services.get_product_performance()
 
-@app.get("/optimization/shelf-recommendations", response_model=List[OptimizationResult])
-def get_shelf_recommendations():
+@app.get("/optimization/shelf-recommendations")
+def get_shelf_recommendations(retailer_id: Optional[str] = None):
+    if retailer_id:
+        return recommender.get_shelf_recommendations(retailer_id)
     return services.generate_recommendations()
 
 # --- Customer & Retailer Interaction (Recommender Engine) ---
@@ -101,6 +105,14 @@ def login_user(user_id: str = Body(...), password: str = Body(...)):
     if res["status"] == "success":
         return res
     raise HTTPException(status_code=401, detail=res["message"])
+
+@app.post("/users/signup")
+def signup_user(name: str = Body(...), user_id: str = Body(...), password: str = Body(...), role: str = Body("customer")):
+    """Register a new user"""
+    res = recommender.register_user(name, user_id, password, role)
+    if res["status"] == "success":
+        return res
+    raise HTTPException(status_code=400, detail=res["message"])
 
 @app.post("/delivery/confirm")
 async def confirm_delivery(order_id: str = Body(...), user_id: str = Body(...)):
@@ -138,6 +150,18 @@ def place_order(user_id: str = Body(...), retailer_id: str = Body(...), items: D
         return {"status": "success", "order_id": order_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/cart/update")
+def update_cart(user_id: str = Body(...), store_id: str = Body(...), items: Dict[str, int] = Body(...)):
+    if recommender.update_cart(user_id, store_id, items):
+        return {"status": "success"}
+    raise HTTPException(status_code=500, detail="Firestore not enabled")
+
+@app.get("/cart/{user_id}/{store_id}")
+def get_cart(user_id: str, store_id: str):
+    cart = recommender.get_cart(user_id, store_id)
+    if cart: return cart
+    return {"userId": user_id, "storeId": store_id, "items": []}
 
 @app.get("/users/{user_id}/orders")
 def get_user_orders(user_id: str):
@@ -206,6 +230,10 @@ def toggle_user(user_id: str):
 @app.get("/admin/logs")
 def get_logs():
     return recommender.get_system_logs()
+
+@app.get("/admin/stats")
+def get_admin_stats():
+    return recommender.get_platform_stats()
 
 @app.get("/admin/user-trust/{user_id}")
 def get_user_trust(user_id: str):

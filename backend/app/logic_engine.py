@@ -6,10 +6,14 @@ import hashlib
 from datetime import datetime, timedelta
 from PIL import Image
 from .fraud_detection.services.fraud_detection_service import FraudDetectionService
+from .firestore_service import FirestoreService
 
 class RecommendationEngine:
-    def __init__(self, data_dir='data'):
+    def __init__(self, data_dir='data', use_firestore=True):
         self.data_dir = data_dir
+        self.use_firestore = use_firestore
+        self.fs = FirestoreService() if use_firestore else None
+        
         self.users = pd.DataFrame()
         self.products = pd.DataFrame()
         self.interactions = pd.DataFrame()
@@ -20,6 +24,7 @@ class RecommendationEngine:
         self.support_tickets = pd.DataFrame()
         self.categories = ['Beverages', 'Junk', 'Healthy', 'Essentials']
         self.fraud_service = FraudDetectionService()
+        self.shelf_layout = []
         
     def load_data(self):
         """Loads data from CSV files."""
@@ -27,58 +32,131 @@ class RecommendationEngine:
             # Users
             user_path = os.path.join(self.data_dir, 'users.csv')
             if os.path.exists(user_path):
-                self.users = pd.read_csv(user_path)
+                self.users = pd.read_csv(user_path).fillna("")
                 if 'password' not in self.users.columns:
-                    self.users['password'] = 'pass123' # Default for migration
+                    self.users['password'] = 'pass123' 
             else:
-                self.users = pd.DataFrame(columns=['user_id', 'name', 'password', 'join_date'])
-            self.products = pd.read_csv(os.path.join(self.data_dir, 'products.csv'))
-            if 'active' not in self.products.columns:
-                self.products['active'] = True
+                self.users = pd.DataFrame(columns=['user_id', 'name', 'password', 'active', 'join_date'])
+
+            # Products
+            prod_path = os.path.join(self.data_dir, 'products.csv')
+            if os.path.exists(prod_path):
+                self.products = pd.read_csv(prod_path).fillna(0)
+                if 'active' not in self.products.columns:
+                    self.products['active'] = True
+            else:
+                self.products = pd.DataFrame(columns=['product_id', 'retailer_id', 'name', 'category', 'price', 'stock_count', 'discount_pct', 'active'])
             
-            # Load interactions
+            # Interactions
             int_path = os.path.join(self.data_dir, 'interactions.csv')
             if os.path.exists(int_path):
-                 self.interactions = pd.read_csv(int_path)
+                 self.interactions = pd.read_csv(int_path).fillna("")
                  self.interactions['timestamp'] = pd.to_datetime(self.interactions['timestamp'])
             else:
                  self.interactions = pd.DataFrame(columns=['user_id', 'product_id', 'action', 'timestamp'])
 
-            self.returns = pd.read_csv(os.path.join(self.data_dir, 'returns.csv'))
+            # Returns (General reference data)
+            ret_path = os.path.join(self.data_dir, 'returns.csv')
+            if os.path.exists(ret_path):
+                self.returns = pd.read_csv(ret_path).fillna(0)
+            else:
+                self.returns = pd.DataFrame(columns=['product_id', 'return_risk_score'])
             
             # Load retailers
             retailer_path = os.path.join(self.data_dir, 'retailers.csv')
             if os.path.exists(retailer_path):
-                self.retailers = pd.read_csv(retailer_path)
+                self.retailers = pd.read_csv(retailer_path).fillna("")
                 if 'status' not in self.retailers.columns:
-                    self.retailers['status'] = 'Approved' # Default
+                    self.retailers['status'] = 'Approved'
             else:
                 self.retailers = pd.DataFrame(columns=['retailer_id', 'name', 'location', 'delivery_charge', 'rating', 'status'])
             
             # Load orders
             orders_path = os.path.join(self.data_dir, 'orders.csv')
             if os.path.exists(orders_path):
-                self.orders = pd.read_csv(orders_path)
+                self.orders = pd.read_csv(orders_path).fillna(0)
             else:
                 self.orders = pd.DataFrame(columns=['order_id', 'user_id', 'retailer_id', 'items_json', 'total_amount', 'status', 'timestamp'])
             
             # Load survey
             survey_path = os.path.join(self.data_dir, 'survey_responses.csv')
             if os.path.exists(survey_path) and os.path.getsize(survey_path) > 0:
-                self.survey_responses = pd.read_csv(survey_path)
+                self.survey_responses = pd.read_csv(survey_path).fillna("")
             else:
-                self.survey_responses = pd.DataFrame(columns=['user_id', 'preferred_categories', 'shopping_intent', 'return_sensitivity'])
                 self.survey_responses = pd.DataFrame(columns=['user_id', 'preferred_categories', 'shopping_intent', 'return_sensitivity'])
             
             # Load Support Tickets
             sup_path = os.path.join(self.data_dir, 'support_tickets.csv')
             if os.path.exists(sup_path):
-                self.support_tickets = pd.read_csv(sup_path)
+                self.support_tickets = pd.read_csv(sup_path).fillna("")
             else:
                 self.support_tickets = pd.DataFrame(columns=['ticket_id', 'user_id', 'role', 'issue', 'status', 'response', 'timestamp'])
+            
+            # Load Shelf Layout from JSON
+            shelf_path = os.path.join(self.data_dir, 'shelf_layout.json')
+            if os.path.exists(shelf_path):
+                with open(shelf_path, 'r') as f:
+                    self.shelf_layout = json.load(f)
+            
+            if self.use_firestore:
+                self.sync_to_firestore()
 
         except Exception as e:
             print(f"Error loading data: {e}")
+
+    def sync_to_firestore(self):
+        """Initial sync of local CSV data to Firestore."""
+        if not self.fs or not self.fs.db: return
+        
+        print("Syncing data to Firestore...")
+        # ... (implementation remains the same but with safer check)
+        
+        # Sync Users
+        for _, u in self.users.iterrows():
+            self.fs.sync_user(str(u['user_id']), u.to_dict())
+            
+        # Sync Retailers
+        for _, r in self.retailers.iterrows():
+            self.fs.add_document("retailers", {
+                "storeName": r['name'],
+                "location": r['location'],
+                "approvedStatus": r['status'],
+                "createdAt": datetime.now()
+            }, doc_id=str(r['retailer_id']))
+            
+        # Sync Products
+        for _, p in self.products.iterrows():
+            self.fs.sync_product(str(p['product_id']), p.to_dict())
+            
+        # Sync Orders
+        for _, o in self.orders.iterrows():
+            self.fs.add_document("orders", {
+                "userId": o['user_id'],
+                "retailerId": o['retailer_id'],
+                "totalAmount": o['total_amount'],
+                "orderDate": o['timestamp'],
+                "status": o['status']
+            }, doc_id=str(o['order_id']))
+
+        print("Firestore sync complete.")
+
+    def update_cart(self, user_id, store_id, items_dict):
+        """Update user's cart in Firestore."""
+        if not self.fs: return False
+        cart_id = f"CART_{user_id}_{store_id}"
+        self.fs.add_document("carts", {
+            "userId": user_id,
+            "storeId": store_id,
+            "items": [{"productId": pid, "quantity": qty} for pid, qty in items_dict.items()],
+            "updatedAt": datetime.now()
+        }, doc_id=cart_id)
+        return True
+
+    def get_cart(self, user_id, store_id):
+        """Fetch user's cart from Firestore."""
+        if not self.fs: return None
+        cart_id = f"CART_{user_id}_{store_id}"
+        return self.fs.get_document("carts", cart_id)
 
     def save_survey_response(self, user_id, preferences, intent, return_sensitivity, age, gender, dietary):
         new_row = {
@@ -106,52 +184,45 @@ class RecommendationEngine:
         else:
             self.survey_responses = pd.concat([self.survey_responses, pd.DataFrame([new_row])], ignore_index=True)
         self.survey_responses.to_csv(os.path.join(self.data_dir, 'survey_responses.csv'), index=False)
-
-    def create_user(self, name):
-        """Creates a new user and returns user_id."""
-        if not self.users.empty:
-            last_id = self.users['user_id'].max()
-            try:
-                num = int(last_id[1:]) + 1
-            except:
-                num = len(self.users) + 100
-        else:
-            num = 1
         
-        user_id = f"U{num:03d}"
+        if self.use_firestore:
+            self.fs.add_document("survey_responses", {
+                "userId": user_id,
+                "preferredCategories": preferences,
+                "purchaseFrequency": intent,
+                "budgetRange": "normal",
+                "submittedAt": datetime.now()
+            })
+            self.fs.log_activity(user_id, "user", "survey_submitted")
+
+    def register_user(self, name, user_id, password, role="customer"):
+        """Registers a new user or retailer."""
+        if user_id in self.users['user_id'].values:
+            return {"status": "error", "message": "Identity already taken"}
+            
         new_user = {
             'user_id': user_id,
             'name': name,
+            'password': str(password),
+            'active': True,
             'join_date': datetime.now().strftime('%Y-%m-%d')
         }
         
         self.users = pd.concat([self.users, pd.DataFrame([new_user])], ignore_index=True)
         self.users.to_csv(os.path.join(self.data_dir, 'users.csv'), index=False)
-        return user_id
-
-    def create_retailer(self, name, location, delivery_charge):
-        """Creates a new retailer and returns retailer_id."""
-        if not self.retailers.empty:
-            last_id = self.retailers['retailer_id'].max()
-            try:
-                num = int(last_id[1:]) + 1
-            except:
-                num = len(self.retailers) + 100
-        else:
-            num = 1
-            
-        retailer_id = f"R{num:03d}"
-        new_retailer = {
-            'retailer_id': retailer_id,
-            'name': name,
-            'location': location,
-            'delivery_charge': delivery_charge,
-            'rating': 5.0 
-        }
         
-        self.retailers = pd.concat([self.retailers, pd.DataFrame([new_retailer])], ignore_index=True)
-        self.retailers.to_csv(os.path.join(self.data_dir, 'retailers.csv'), index=False)
-        return retailer_id
+        if self.use_firestore:
+            self.fs.sync_user(user_id, new_user)
+            self.fs.log_activity(user_id, role, "account_created")
+            
+        return {"status": "success", "user_id": user_id}
+
+    def create_user(self, name):
+        """Legacy helper for internal tests."""
+        num = len(self.users) + 100
+        user_id = f"U{num:03d}"
+        return self.register_user(name, user_id, "pass123")["user_id"]
+
 
     def delete_retailer(self, retailer_id):
         self.retailers = self.retailers[self.retailers['retailer_id'] != retailer_id]
@@ -159,22 +230,35 @@ class RecommendationEngine:
         return True
 
     def get_platform_stats(self):
-        req_path = os.path.join(self.data_dir, 'return_requests.csv')
+        # Default stats from CSV
         returns_count = 0
         fraud_alerts = 0
+        req_path = os.path.join(self.data_dir, 'return_requests.csv')
         if os.path.exists(req_path):
-            df_ret = pd.read_csv(req_path)
+            df_ret = pd.read_csv(req_path).fillna(0)
             returns_count = len(df_ret)
             fraud_alerts = len(df_ret[df_ret['fraud_score'] > 60])
 
-        return {
+        total_vol = float(self.orders['total_amount'].sum()) if not self.orders.empty else 0
+        
+        stats = {
             'users': len(self.users),
             'retailers': len(self.retailers),
             'orders': len(self.orders),
-            'returns': returns_count,
-            'fraud_alerts': fraud_alerts,
-            'total_volume': float(self.orders['total_amount'].sum())
+            'returns': int(returns_count),
+            'fraud_alerts': int(fraud_alerts),
+            'total_volume': total_vol
         }
+        
+        # Override with Firestore if available for live accuracy
+        if self.use_firestore and self.fs.db:
+            try:
+                # Mock high level counts from Firestore collections
+                # In real scenario we'd use aggregation queries
+                pass 
+            except: pass
+            
+        return stats
 
     def get_user_trust_score(self, user_id):
         """Calculates a trust score based on return history."""
@@ -186,7 +270,7 @@ class RecommendationEngine:
         req_path = os.path.join(self.data_dir, 'return_requests.csv')
         if not os.path.exists(req_path): return 100
         
-        all_reqs = pd.read_csv(req_path)
+        all_reqs = pd.read_csv(req_path).fillna(0)
         user_returns = all_reqs[all_reqs['user_id'] == user_id]
         total_returns = len(user_returns)
         
@@ -197,7 +281,7 @@ class RecommendationEngine:
         return score
 
     def get_retailers(self):
-        return self.retailers.to_dict(orient='records')
+        return self.retailers.fillna("").to_dict(orient='records')
 
     def get_retailer_products(self, retailer_id):
         return self.products[self.products['retailer_id'] == retailer_id].copy()
@@ -214,6 +298,13 @@ class RecommendationEngine:
         if active is not None: self.products.at[idx, 'active'] = bool(active)
         
         self.products.to_csv(os.path.join(self.data_dir, 'products.csv'), index=False)
+        
+        if self.use_firestore:
+            update_data = {}
+            if new_stock is not None: update_data["stockQuantity"] = int(new_stock)
+            if new_price is not None: update_data["price"] = int(new_price)
+            if update_data:
+                self.fs.update_document("products", product_id, update_data)
         return True
 
     def add_product(self, retailer_id, name, category, price, stock):
@@ -240,6 +331,10 @@ class RecommendationEngine:
         }
         self.products = pd.concat([self.products, pd.DataFrame([new_prod])], ignore_index=True)
         self.products.to_csv(os.path.join(self.data_dir, 'products.csv'), index=False)
+        
+        if self.use_firestore:
+            self.fs.sync_product(pid, new_prod)
+            
         return pid
 
     def delete_product(self, product_id):
@@ -254,6 +349,7 @@ class RecommendationEngine:
         
         total_amt = 0
         valid_items = {}
+        fs_items = []
         for pid, qty in items_dict.items():
             prod = self.products[self.products['product_id'] == pid]
             if not prod.empty:
@@ -262,6 +358,7 @@ class RecommendationEngine:
                 final_price = price * (1 - discount/100)
                 total_amt += final_price * qty
                 valid_items[pid] = {'qty': qty, 'price': final_price, 'name': prod.iloc[0]['name']}
+                fs_items.append({"productId": pid, "quantity": qty, "priceAtPurchase": final_price})
                 
                 current_stock = prod.iloc[0]['stock_count']
                 self.update_product_stock_price(pid, new_stock=max(0, current_stock - qty))
@@ -280,6 +377,18 @@ class RecommendationEngine:
         self.orders = pd.concat([self.orders, pd.DataFrame([new_order])], ignore_index=True)
         self.orders.to_csv(os.path.join(self.data_dir, 'orders.csv'), index=False)
         
+        if self.use_firestore:
+            self.fs.add_document("orders", {
+                "userId": user_id,
+                "retailerId": retailer_id,
+                "products": fs_items,
+                "totalAmount": round(total_amt, 2),
+                "orderDate": datetime.now(),
+                "orderType": "online",
+                "status": "Placed"
+            }, doc_id=order_id)
+            self.fs.log_activity(user_id, "user", f"order_placed_{order_id}")
+
         new_interactions = []
         for pid in valid_items:
             new_interactions.append({
@@ -288,6 +397,13 @@ class RecommendationEngine:
                 'action': 'purchase',
                 'timestamp': datetime.now()
             })
+            if self.use_firestore:
+                self.fs.add_document("interactions", {
+                    "userId": user_id,
+                    "productId": pid,
+                    "action": "purchase",
+                    "timestamp": datetime.now()
+                })
         
         if new_interactions:
             self.interactions = pd.concat([self.interactions, pd.DataFrame(new_interactions)], ignore_index=True)
@@ -359,8 +475,9 @@ class RecommendationEngine:
                 js_str = order['items_json']
                 if isinstance(js_str, str):
                     items = json.loads(js_str.replace("'", '"'))
-                    for pid, qty in items.items():
-                        sold_stats[str(pid)] = sold_stats.get(str(pid), 0) + int(qty)
+                    for pid, details in items.items():
+                        q = details['qty'] if isinstance(details, dict) else details
+                        sold_stats[str(pid)] = sold_stats.get(str(pid), 0) + int(q)
             except:
                 continue
         
@@ -379,7 +496,7 @@ class RecommendationEngine:
         if not r_orders.empty:
             r_orders = r_orders.copy()
             r_orders['dt'] = pd.to_datetime(r_orders['timestamp'])
-            daily = r_orders.groupby(r_orders['dt'].dt.date)['total_amount'].sum().reset_index()
+            daily = r_orders.groupby(r_orders['dt'].dt.date)['total_amount'].sum().reset_index().fillna(0)
             sales_data = [{"date": str(r['dt']), "sales": float(r['total_amount'])} for _, r in daily.iterrows()]
         
         return {
@@ -388,6 +505,136 @@ class RecommendationEngine:
             "total_revenue": float(r_orders['total_amount'].sum()) if not r_orders.empty else 0,
             "total_orders": len(r_orders)
         }
+
+    def get_shelf_recommendations(self, retailer_id):
+        """Generate shelf optimization recommendations based on sales velocity."""
+        # 1. Calculate Sales Velocity
+        r_orders = self.orders[self.orders['retailer_id'] == retailer_id]
+        sold_stats = {}
+        for _, order in r_orders.iterrows():
+            try:
+                js_str = order['items_json']
+                if isinstance(js_str, str):
+                    items = json.loads(js_str.replace("'", '"'))
+                    for pid, details in items.items():
+                        q = details['qty'] if isinstance(details, dict) else details
+                        sold_stats[str(pid)] = sold_stats.get(str(pid), 0) + int(q)
+            except: continue
+            
+        # 2. Get Products for this retailer
+        my_prods = self.products[self.products['retailer_id'] == retailer_id].copy()
+        if my_prods.empty: return []
+        
+        # Add sold_qty to the products
+        my_prods['sold_qty'] = my_prods['product_id'].astype(str).map(sold_stats).fillna(0)
+        
+        # 3. Determine Thresholds (High, Average, Low)
+        # We'll use simple percentiles
+        quantiles = my_prods['sold_qty'].quantile([0.33, 0.66]).to_dict()
+        low_thresh = quantiles.get(0.33, 0)
+        high_thresh = quantiles.get(0.66, 0)
+        
+        # 4. Map Product to Current Zone
+        product_zone_map = {}
+        for zone in self.shelf_layout:
+            for pid in zone.get('current_product_ids', []):
+                product_zone_map[str(pid)] = zone.get('zone_type', 'Unknown')
+                
+        recs = []
+        for _, p in my_prods.iterrows():
+            pid = str(p['product_id'])
+            name = p['name']
+            sales = p['sold_qty']
+            current_z = product_zone_map.get(pid, "None")
+            
+            recommended_z = ""
+            reason = ""
+            
+            if sales > high_thresh:
+                recommended_z = "Eye Level"
+                reason = f"High Performance ({int(sales)} units sold). Move to Eye Level for maximum engagement."
+            elif sales < low_thresh:
+                recommended_z = "Stretch Level"
+                reason = f"Lower Performance ({int(sales)} units sold). Move to Stretch Level (Top Shelf) to optimize space."
+            else:
+                recommended_z = "Touch Level"
+                reason = f"Moderate Performance ({int(sales)} units sold). Maintain at Touch Level (Middle-Low) parity."
+                
+            # Only recommend if it's not already in that zone
+            if current_z != recommended_z:
+                recs.append({
+                    "product_id": pid,
+                    "product_name": name,
+                    "current_zone": current_z,
+                    "recommended_zone": recommended_z,
+                    "reason": reason
+                })
+        
+        return recs
+
+    def get_retailer_shelf(self, retailer_id):
+        """Generates a dynamic shelf layout based on real sales performance metadata."""
+        # 1. Calculate Sales
+        r_orders = self.orders[self.orders['retailer_id'] == retailer_id]
+        sold_stats = {}
+        for _, order in r_orders.iterrows():
+            try:
+                js_str = order['items_json']
+                if isinstance(js_str, str):
+                    items = json.loads(js_str.replace("'", '"'))
+                    for pid, details in items.items():
+                        q = details['qty'] if isinstance(details, dict) else details
+                        sold_stats[str(pid)] = sold_stats.get(str(pid), 0) + int(q)
+            except: continue
+            
+        # 2. Get Products
+        my_prods = self.products[self.products['retailer_id'] == retailer_id].copy()
+        if my_prods.empty:
+            # Fallback to some generic data if they have no products yet
+            return [
+                {"zone_type": "Eye Level", "current_product_ids": [], "zone_name": "Eye Level"},
+                {"zone_type": "Touch Level", "current_product_ids": [], "zone_name": "Touch Level"},
+                {"zone_type": "Stretch Level", "current_product_ids": [], "zone_name": "Stretch Level"}
+            ]
+            
+        my_prods['sold_qty'] = my_prods['product_id'].astype(str).map(sold_stats).fillna(0)
+        
+        # 3. Sort and Split
+        sorted_prods = my_prods.sort_values(by='sold_qty', ascending=False)
+        n = len(sorted_prods)
+        
+        # Determine splits
+        high_prods = sorted_prods.head(max(1, n // 3))
+        low_prods = sorted_prods.tail(max(1, n // 3))
+        
+        # Everything else is average/touch level
+        high_ids = high_prods['product_id'].tolist()
+        low_ids = low_prods['product_id'].tolist()
+        mid_ids = sorted_prods[~sorted_prods['product_id'].isin(high_ids + low_ids)]['product_id'].tolist()
+        
+        return [
+            {
+                "id": f"{retailer_id}_eye",
+                "zone_type": "Eye Level",
+                "zone_name": "Premium Eye Level",
+                "current_product_ids": high_ids,
+                "description": "High sales velocity items"
+            },
+            {
+                "id": f"{retailer_id}_touch",
+                "zone_type": "Touch Level",
+                "zone_name": "Standard Touch Level",
+                "current_product_ids": mid_ids,
+                "description": "Average performing items"
+            },
+            {
+                "id": f"{retailer_id}_stretch",
+                "zone_type": "Stretch Level",
+                "zone_name": "Top Stretch Level",
+                "current_product_ids": low_ids,
+                "description": "Low frequency items"
+            }
+        ]
 
     def login_user(self, user_id, password):
         if user_id in self.users['user_id'].values:
@@ -485,14 +732,15 @@ class RecommendationEngine:
                 'product_id': pid,
                 'name': prod['name'],
                 'category': cat,
-                'price': prod['price'],
-                'final_score': final_score,
+                'price': float(prod['price']),
+                'final_score': float(final_score),
                 'explanation': explanation,
-                'stock': prod['stock_count'],
-                'discount': prod['discount_pct']
+                'stock': int(prod['stock_count']),
+                'discount': int(prod['discount_pct'])
             })
             
-        results = pd.DataFrame(scored_products).sort_values('final_score', ascending=False)
+        if not scored_products: return pd.DataFrame()
+        results = pd.DataFrame(scored_products).fillna(0).sort_values('final_score', ascending=False)
         return results.head(top_n)
 
     def bulk_process_products(self, retailer_id, df):
@@ -597,18 +845,40 @@ class RecommendationEngine:
 
     def get_users_list(self):
         if self.users.empty: return []
-        return self.users.to_dict(orient='records')
+        return self.users.fillna("").to_dict(orient='records')
 
     def toggle_user_status(self, user_id):
         if user_id in self.users['user_id'].values:
             idx = self.users[self.users['user_id'] == user_id].index[0]
             current = self.users.at[idx, 'active'] if 'active' in self.users.columns else True
-            self.users.at[idx, 'active'] = not current
+            new_status = not current
+            self.users.at[idx, 'active'] = new_status
             self.users.to_csv(os.path.join(self.data_dir, 'users.csv'), index=False)
+            
+            if self.use_firestore:
+                self.fs.update_document("users", user_id, {"active": new_status})
+                self.fs.log_activity("admin", "admin", f"user_{user_id}_status_{new_status}")
             return True
         return False
 
     def get_system_logs(self):
+        if self.use_firestore and self.fs and self.fs.db:
+            try:
+                logs_data = self.fs.query_collection("activity_logs")
+                # Sort by timestamp desc
+                logs_data.sort(key=lambda x: x.get('timestamp', datetime.min), reverse=True)
+                formatted = []
+                for l in logs_data[:50]:
+                    formatted.append({
+                        "level": "INFO", 
+                        "event": f"{l.get('actorRole', 'system')}: {l.get('action')}",
+                        "time": l.get('timestamp').isoformat() if hasattr(l.get('timestamp'), 'isoformat') else str(l.get('timestamp'))
+                    })
+                return formatted
+            except Exception as e:
+                print(f"Firestore log fetch failed: {e}")
+
+        # Fallback to mock
         return [
             {"time": (datetime.now() - timedelta(minutes=i*5)).isoformat(), "event": f"API Request: {e}", "level": "INFO"}
             for i, e in enumerate(["GET /products", "POST /login", "GET /recs", "POST /order", "GET /admin/stats"])
@@ -683,12 +953,27 @@ class RecommendationEngine:
         req_path = os.path.join(self.data_dir, 'return_requests.csv')
         df = pd.DataFrame([new_req])
         df.to_csv(req_path, mode='a', header=not os.path.exists(req_path), index=False)
+        
+        if self.use_firestore:
+            self.fs.add_document("returns", {
+                "orderId": order_id,
+                "userId": user_id,
+                "retailerId": new_req['retailer_id'],
+                "productId": product_id,
+                "reason": reason,
+                "status": "Pending",
+                "fraudScore": fraud_score,
+                "imagePath": image_path,
+                "requestedAt": datetime.now()
+            }, doc_id=req_id)
+            self.fs.log_activity(user_id, "user", f"return_requested_{req_id}")
+            
         return req_id
 
     def get_pending_returns(self):
         req_path = os.path.join(self.data_dir, 'return_requests.csv')
         if not os.path.exists(req_path): return []
-        df = pd.read_csv(req_path)
+        df = pd.read_csv(req_path).fillna(0)
         if df.empty: return []
         pending = df[df['status'] == 'Pending'].copy()
         return pending.to_dict(orient='records')
@@ -696,14 +981,14 @@ class RecommendationEngine:
     def get_user_returns(self, user_id):
         req_path = os.path.join(self.data_dir, 'return_requests.csv')
         if not os.path.exists(req_path): return []
-        df = pd.read_csv(req_path)
+        df = pd.read_csv(req_path).fillna(0)
         if df.empty: return []
         return df[df['user_id'] == user_id].to_dict(orient='records')
 
     def get_retailer_returns(self, retailer_id):
         req_path = os.path.join(self.data_dir, 'return_requests.csv')
         if not os.path.exists(req_path): return []
-        df = pd.read_csv(req_path)
+        df = pd.read_csv(req_path).fillna(0)
         if df.empty: return []
         return df[(df['retailer_id'] == retailer_id) & (df['status'] == 'Approved')].to_dict(orient='records')
 
@@ -711,12 +996,19 @@ class RecommendationEngine:
         req_path = os.path.join(self.data_dir, 'return_requests.csv')
         if not os.path.exists(req_path): return False
         
-        df = pd.read_csv(req_path)
+        df = pd.read_csv(req_path).fillna(0)
         if request_id in df['request_id'].values:
             idx = df[df['request_id'] == request_id].index[0]
             df.at[idx, 'status'] = decision 
             df.at[idx, 'admin_notes'] = notes
             df.to_csv(req_path, index=False)
+            
+            if self.use_firestore:
+                self.fs.update_document("returns", request_id, {
+                    "status": decision,
+                    "adminNotes": notes
+                })
+                self.fs.log_activity("admin", "admin", f"return_{request_id}_{decision}")
             return True
         return False
 
@@ -724,8 +1016,13 @@ class RecommendationEngine:
         if retailer_id in self.retailers['retailer_id'].values:
             idx = self.retailers[self.retailers['retailer_id'] == retailer_id].index[0]
             current = self.retailers.at[idx, 'status']
-            self.retailers.at[idx, 'status'] = 'Banned' if current == 'Approved' else 'Approved'
+            new_status = 'Banned' if current == 'Approved' else 'Approved'
+            self.retailers.at[idx, 'status'] = new_status
             self.retailers.to_csv(os.path.join(self.data_dir, 'retailers.csv'), index=False)
+            
+            if self.use_firestore:
+                self.fs.update_document("retailers", retailer_id, {"approvedStatus": new_status})
+                self.fs.log_activity("admin", "admin", f"retailer_{retailer_id}_{new_status}")
             return True
         return False
 
@@ -741,6 +1038,16 @@ class RecommendationEngine:
         }
         self.retailers = pd.concat([self.retailers, pd.DataFrame([new_retailer])], ignore_index=True)
         self.retailers.to_csv(os.path.join(self.data_dir, 'retailers.csv'), index=False)
+        
+        if self.use_firestore:
+            self.fs.add_document("retailers", {
+                "storeName": name,
+                "location": location,
+                "approvedStatus": "Pending",
+                "createdAt": datetime.now()
+            }, doc_id=rid)
+            self.fs.log_activity("retailer", "retailer_registration", f"retailer_registered_{rid}")
+            
         return rid
 
 if __name__ == "__main__":

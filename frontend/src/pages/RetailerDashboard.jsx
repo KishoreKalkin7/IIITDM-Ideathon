@@ -22,9 +22,9 @@ export default function RetailerDashboard() {
 
     const fetchInitialData = async () => {
         api.getRetailerNotifs(rid).then(setNotifs).catch(console.error);
-        api.getShelfLayout().then(setShelfLayout).catch(console.error);
+        api.getShelfLayout(rid).then(setShelfLayout).catch(console.error);
         api.fetchAPI(`/retailers/${rid}/analytics`).then(setAnalytics).catch(console.error);
-        api.getShelfRecs().then(setShelfRecs).catch(console.error);
+        api.getShelfRecs(rid).then(setShelfRecs).catch(console.error);
         api.fetchAPI(`/retailers/${rid}/returns`).then(setReturns).catch(console.error);
         api.fetchAPI(`/retailers/${rid}/products`).then(setProducts).catch(console.error);
         api.fetchAPI(`/retailers/${rid}/orders`).then(setOrders).catch(console.error);
@@ -287,29 +287,41 @@ export default function RetailerDashboard() {
         </div>
     );
 
-    const ShelfLayoutView = () => (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Shelf Arrangement Optimiser</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {shelfLayout.map(zone => (
-                    <div key={zone.zone_id} className="bg-neutral-900 border border-neutral-800 p-6 rounded-2xl">
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-xl font-bold text-white">{zone.zone_name}</h3>
-                            <span className="text-xs font-bold uppercase bg-neutral-800 px-2 py-1 rounded text-neutral-400">{zone.zone_type}</span>
+    const ShelfLayoutView = () => {
+        const getProductName = (pid) => {
+            const p = products.find(prod => String(prod.product_id) === String(pid));
+            return p ? p.name : `Product ${pid}`;
+        };
+
+        return (
+            <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-white">Shelf Arrangement Optimiser</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {shelfLayout.map(zone => (
+                        <div key={zone.id || zone.zone_id} className="bg-neutral-900 border border-neutral-800 p-6 rounded-2xl">
+                            <div className="flex justify-between items-start mb-4">
+                                <h3 className="text-xl font-bold text-white">{zone.zone_name || zone.zone_type}</h3>
+                                <span className="text-xs font-bold uppercase bg-neutral-800 px-2 py-1 rounded text-neutral-400">{zone.zone_type}</span>
+                            </div>
+                            <div className="space-y-2">
+                                {zone.current_product_ids.map(pid => {
+                                    const pName = getProductName(pid);
+                                    // Optionally hide products that don't belong to this retailer if desired, 
+                                    // but for now we just show names.
+                                    return (
+                                        <div key={pid} className="p-3 bg-neutral-950 rounded-lg flex justify-between items-center border border-white/5">
+                                            <span className="text-sm">{pName}</span>
+                                            <span className="text-xs text-neutral-600">Active</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            {zone.current_product_ids.map(pid => (
-                                <div key={pid} className="p-3 bg-neutral-950 rounded-lg flex justify-between items-center border border-white/5">
-                                    <span className="text-sm">Product {pid}</span>
-                                    <span className="text-xs text-neutral-600">Active</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <div className="min-h-screen bg-black text-white flex">

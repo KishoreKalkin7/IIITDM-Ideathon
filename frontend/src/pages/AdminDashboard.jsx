@@ -11,7 +11,9 @@ import {
     AlertTriangle,
     CheckCircle,
     XCircle,
-    TrendingUp
+    TrendingUp,
+    List,
+    RefreshCw
 } from "lucide-react";
 
 export default function AdminDashboard() {

@@ -22,9 +22,9 @@ export async function fetchAPI(endpoint, options = {}) {
 export const api = {
     fetchAPI,
     getProducts: () => fetchAPI("/products"),
-    getShelfLayout: () => fetchAPI("/shelf-layout"),
+    getShelfLayout: (rid) => fetchAPI(`/shelf-layout${rid ? `?retailer_id=${rid}` : ""}`),
     getAnalytics: () => fetchAPI("/analytics/performance"),
-    getShelfRecs: () => fetchAPI("/optimization/shelf-recommendations"),
+    getShelfRecs: (rid) => fetchAPI(`/optimization/shelf-recommendations${rid ? `?retailer_id=${rid}` : ""}`),
 
     // Users
     getUsers: () => fetchAPI("/users"),
@@ -46,4 +46,11 @@ export const api = {
 
     // Fraud
     getFraudStatus: (oid) => fetchAPI(`/fraud/order/${oid}/status`),
+
+    // Cart
+    updateCart: (user_id, store_id, items) => fetchAPI("/cart/update", {
+        method: "POST",
+        body: JSON.stringify({ user_id, store_id, items })
+    }),
+    getCart: (user_id, store_id) => fetchAPI(`/cart/${user_id}/${store_id}`),
 };
