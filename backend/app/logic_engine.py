@@ -307,7 +307,7 @@ class RecommendationEngine:
                 self.fs.update_document("products", product_id, update_data)
         return True
 
-    def add_product(self, retailer_id, name, category, price, stock):
+    def add_product(self, retailer_id, name, category, price, stock, discount=0, combo_offer="", imageUrl=""):
         if not self.products.empty:
             try:
                 last_id = self.products['product_id'].max()
@@ -325,7 +325,9 @@ class RecommendationEngine:
             'category': category,
             'price': price,
             'stock_count': stock,
-            'discount_pct': 0,
+            'discount_pct': discount,
+            'combo_offer': combo_offer,
+            'imageUrl': imageUrl,
             'is_essential': False,
             'active': True
         }
@@ -341,6 +343,10 @@ class RecommendationEngine:
         if product_id in self.products['product_id'].values:
             self.products = self.products[self.products['product_id'] != product_id]
             self.products.to_csv(os.path.join(self.data_dir, 'products.csv'), index=False)
+            
+            if self.use_firestore and self.fs:
+                self.fs.delete_document("products", product_id)
+            
             return True
         return False
 
@@ -736,7 +742,9 @@ class RecommendationEngine:
                 'final_score': float(final_score),
                 'explanation': explanation,
                 'stock': int(prod['stock_count']),
-                'discount': int(prod['discount_pct'])
+                'discount': int(prod['discount_pct']),
+                'combo_offer': str(prod.get('combo_offer', '')),
+                'imageUrl': str(prod.get('imageUrl', ''))
             })
             
         if not scored_products: return pd.DataFrame()

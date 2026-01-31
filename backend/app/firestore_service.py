@@ -66,6 +66,17 @@ class FirestoreService:
             print(f"Firestore update_document error: {e}")
             return False
 
+    def delete_document(self, collection, doc_id):
+        """Delete a document from a collection"""
+        try:
+            col_ref = self.get_collection(collection)
+            if not col_ref: return False
+            col_ref.document(doc_id).delete()
+            return True
+        except Exception as e:
+            print(f"Firestore delete_document error: {e}")
+            return False
+
     def query_collection(self, collection, filters=None):
         col_ref = self.get_collection(collection)
         if not col_ref: return []
@@ -106,6 +117,8 @@ class FirestoreService:
             "price": data.get("price"),
             "stockQuantity": data.get("stock_count"),
             "imageUrl": data.get("imageUrl", ""),
+            "discount": data.get("discount", 0),
+            "comboOffer": data.get("combo_offer", ""),
             "salesCount": data.get("salesCount", 0),
             "createdAt": datetime.now()
         }

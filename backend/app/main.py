@@ -18,6 +18,18 @@ class ProductModel(BaseModel):
     category: str
     price: float
     stock: int
+    discount: Optional[float] = 0
+    combo_offer: Optional[str] = ""
+    imageUrl: Optional[str] = ""
+
+class ProductUpdateModel(BaseModel):
+    name: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[float] = None
+    stock: Optional[int] = None
+    discount: Optional[float] = None
+    combo_offer: Optional[str] = None
+    imageUrl: Optional[str] = None
 
 class SurveyModel(BaseModel):
     user_id: str
@@ -260,7 +272,10 @@ def save_survey(data: SurveyModel):
 
 @app.post("/retailers/{retailer_id}/products")
 def add_product(retailer_id: str, prod: ProductModel):
-    pid = recommender.add_product(retailer_id, prod.name, prod.category, prod.price, prod.stock)
+    pid = recommender.add_product(
+        retailer_id, prod.name, prod.category, prod.price, prod.stock,
+        prod.discount, prod.combo_offer, prod.imageUrl
+    )
     return {"status": "success", "product_id": pid}
 
 @app.get("/retailers/{retailer_id}/products")
@@ -277,11 +292,127 @@ def get_retailer_orders(retailer_id: str):
 def get_retailer_analytics(retailer_id: str):
     return recommender.get_retailer_analytics(retailer_id)
 
+@app.put("/retailers/{retailer_id}/products/{product_id}")
+def update_product(retailer_id: str, product_id: str, prod: ProductUpdateModel):
+    """Update an existing product"""
+    if product_id not in recommender.products['product_id'].values:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Verify ownership
+    product_row = recommender.products[recommender.products['product_id'] == product_id].iloc[0]
+    if product_row['retailer_id'] != retailer_id:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    # Update fields
+    if recommender.update_product_stock_price(
+        product_id, 
+        new_stock=prod.stock,
+        new_price=prod.price,
+        new_discount=prod.discount
+    ):
+        # Update other fields if provided
+        idx = recommender.products[recommender.products['product_id'] == product_id].index[0]
+        if prod.name: recommender.products.at[idx, 'name'] = prod.name
+        if prod.category: recommender.products.at[idx, 'category'] = prod.category
+        if prod.combo_offer is not None: recommender.products.at[idx, 'combo_offer'] = prod.combo_offer
+        if prod.imageUrl is not None: recommender.products.at[idx, 'imageUrl'] = prod.imageUrl
+        
+        recommender.products.to_csv(os.path.join(recommender.data_dir, 'products.csv'), index=False)
+        
+        # Sync to Firestore
+        if recommender.use_firestore:
+            recommender.fs.sync_product(product_id, recommender.products.loc[idx].to_dict())
+        
+        return {"status": "success"}
+    raise HTTPException(status_code=400, detail="Failed to update product")
+
 @app.delete("/retailers/{retailer_id}/products/{product_id}")
 def delete_product_endpoint(retailer_id: str, product_id: str):
     if recommender.delete_product(product_id):
          return {"status": "success"}
     raise HTTPException(status_code=400, detail="Failed to delete")
+
+@app.post("/retailers/{retailer_id}/products/bulk-upload")
+async def bulk_upload_products(retailer_id: str, file: UploadFile = File(...)):
+    """Bulk upload products from CSV or Excel file"""
+    from .bulk_upload_service import BulkUploadService
+    
+    # Validate file type
+    if not file.filename.endswith(('.csv', '.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Only .csv and .xlsx files are supported")
+    
+    # Read file content
+    content = await file.read()
+    
+    # Process upload
+    bulk_service = BulkUploadService()
+    result = bulk_service.process_upload(content, file.filename, retailer_id)
+    
+    if result['status'] == 'error':
+        raise HTTPException(status_code=400, detail=result['message'])
+    
+    # Add valid products to database
+    added_count = 0
+    for product in result.get('valid_products', []):
+        try:
+            pid = recommender.add_product(
+                retailer_id,
+                product['name'],
+                product['category'],
+                product['price'],
+                product['stock_count'],
+                product.get('discount', 0),
+                product.get('combo_offer', ''),
+                product.get('imageUrl', '')
+            )
+            added_count += 1
+        except Exception as e:
+            result['errors'].append(f"Failed to add {product['name']}: {str(e)}")
+    
+    return {
+        "status": "success",
+        "total_rows": result['total_rows'],
+        "added_count": added_count,
+        "error_count": len(result['errors']),
+        "errors": result['errors']
+    }
+
+@app.post("/retailers/{retailer_id}/products/{product_id}/upload-image")
+async def upload_product_image(retailer_id: str, product_id: str, image: UploadFile = File(...)):
+    """Upload product image"""
+    # Validate image file
+    if not image.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
+    
+    # Create uploads directory if it doesn't exist
+    upload_dir = os.path.join(BASE_DIR, 'uploads', 'products')
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    # Generate unique filename
+    ext = os.path.splitext(image.filename)[1]
+    filename = f"{product_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}{ext}"
+    filepath = os.path.join(upload_dir, filename)
+    
+    # Save file
+    content = await image.read()
+    with open(filepath, 'wb') as f:
+        f.write(content)
+    
+    # Generate URL (in production, this would be a CDN URL)
+    image_url = f"/uploads/products/{filename}"
+    
+    # Update product with image URL
+    if product_id in recommender.products['product_id'].values:
+        idx = recommender.products[recommender.products['product_id'] == product_id].index[0]
+        recommender.products.at[idx, 'imageUrl'] = image_url
+        recommender.products.to_csv(os.path.join(recommender.data_dir, 'products.csv'), index=False)
+        
+        if recommender.use_firestore:
+            recommender.fs.update_document("products", product_id, {"imageUrl": image_url})
+        
+        return {"status": "success", "imageUrl": image_url}
+    
+    raise HTTPException(status_code=404, detail="Product not found")
 
 # Support Endpoints
 @app.post("/support/create")

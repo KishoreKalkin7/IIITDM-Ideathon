@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { api } from "../lib/api";
 import { useNavigate } from "react-router-dom";
-import { LayoutDashboard, Bell, Box, TrendingUp, LogOut, AlertTriangle, CheckCircle, Package, ShoppingCart, MessageSquare, Plus, Trash } from "lucide-react";
+import { LayoutDashboard, Bell, Box, TrendingUp, LogOut, AlertTriangle, CheckCircle, Package, ShoppingCart, MessageSquare, Plus, Trash, Edit, Upload } from "lucide-react";
+import ProductForm from "../components/ProductForm";
+import BulkUpload from "../components/BulkUpload";
 
 export default function RetailerDashboard() {
     const [view, setView] = useState("overview");
@@ -12,6 +14,9 @@ export default function RetailerDashboard() {
     const [returns, setReturns] = useState([]);
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
+    const [showProductForm, setShowProductForm] = useState(false);
+    const [showBulkUpload, setShowBulkUpload] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
     const rid = localStorage.getItem("retailer_id");
     const navigate = useNavigate();
 
@@ -30,23 +35,34 @@ export default function RetailerDashboard() {
         api.fetchAPI(`/retailers/${rid}/orders`).then(setOrders).catch(console.error);
     };
 
-    const handleAddProduct = async () => {
-        const name = prompt("Product Name:");
-        const category = prompt("Category (Beverages, Junk, Healthy, Essentials):");
-        const price = prompt("Price:");
-        const stock = prompt("Stock:");
-        if (!name || !category || !price || !stock) return;
+    const handleAddProduct = () => {
+        setEditingProduct(null);
+        setShowProductForm(true);
+    };
 
-        await api.fetchAPI(`/retailers/${rid}/products`, {
-            method: "POST",
-            body: JSON.stringify({ name, category, price: parseFloat(price), stock: parseInt(stock) })
-        });
-        fetchInitialData();
+    const handleEditProduct = (product) => {
+        setEditingProduct(product);
+        setShowProductForm(true);
     };
 
     const handleDeleteProduct = async (pid) => {
-        if (!confirm("Delete product?")) return;
-        await api.fetchAPI(`/retailers/${rid}/products/${pid}`, { method: "DELETE" });
+        if (!confirm("Are you sure you want to delete this product?")) return;
+        try {
+            await api.fetchAPI(`/retailers/${rid}/products/${pid}`, { method: "DELETE" });
+            fetchInitialData();
+        } catch (error) {
+            console.error("Delete failed:", error);
+            alert("Failed to delete product");
+        }
+    };
+
+    const handleProductSuccess = () => {
+        fetchInitialData();
+        setShowProductForm(false);
+        setEditingProduct(null);
+    };
+
+    const handleBulkUploadSuccess = () => {
         fetchInitialData();
     };
 
@@ -260,30 +276,147 @@ export default function RetailerDashboard() {
     );
 
     const ProductsView = () => (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-white">Product Catalog</h2>
-                <button onClick={handleAddProduct} className="bg-white text-black px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-neutral-200">
-                    <Plus size={18} /> Add Product
-                </button>
+        <div className="space-y-8">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-neutral-800">
+                <div>
+                    <h1 className="text-3xl font-bold text-white mb-2">Product Catalog</h1>
+                    <p className="text-neutral-400 text-sm">Manage your inventory, add new products, or upload in bulk</p>
+                </div>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setShowBulkUpload(true)}
+                        className="bg-neutral-800 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-neutral-700 border border-neutral-700 transition-all shadow-lg"
+                    >
+                        <Upload size={18} /> Bulk Upload
+                    </button>
+                    <button
+                        onClick={handleAddProduct}
+                        className="bg-white text-black px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-neutral-100 transition-all shadow-lg"
+                    >
+                        <Plus size={18} /> Add Product
+                    </button>
+                </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.map(p => (
-                    <div key={p.product_id} className="bg-neutral-900 border border-neutral-800 p-6 rounded-2xl hover:border-neutral-700 transition-all flex justify-between items-start">
-                        <div>
-                            <div className="text-neutral-500 text-xs mb-1 uppercase tracking-wider">{p.category}</div>
-                            <h3 className="text-white font-bold text-lg mb-2">{p.name}</h3>
-                            <div className="flex items-center gap-4 text-sm">
-                                <span className="text-white font-medium">₹{p.price}</span>
-                                <span className={p.stock_count < 10 ? 'text-red-400 font-bold' : 'text-neutral-500'}>Stock: {p.stock_count}</span>
+
+            {/* Product Grid */}
+            {products.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {products.map(p => (
+                        <div
+                            key={p.product_id}
+                            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-neutral-200 group"
+                        >
+                            {/* Product Image */}
+                            <div className="relative bg-neutral-100 aspect-square overflow-hidden">
+                                {p.imageUrl ? (
+                                    <img
+                                        src={p.imageUrl}
+                                        alt={p.name}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-6xl">
+                                        📦
+                                    </div>
+                                )}
+
+                                {/* Discount Badge */}
+                                {p.discount_pct > 0 && (
+                                    <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                                        {p.discount_pct}% OFF
+                                    </div>
+                                )}
+
+                                {/* Stock Badge */}
+                                {p.stock_count < 10 && (
+                                    <div className="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                                        Low Stock
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Product Details */}
+                            <div className="p-5">
+                                {/* Category */}
+                                <div className="text-neutral-500 text-xs mb-1 uppercase tracking-wider font-semibold">
+                                    {p.category}
+                                </div>
+
+                                {/* Product Name */}
+                                <h3 className="text-black font-bold text-base mb-2 line-clamp-2 min-h-[3rem]">
+                                    {p.name}
+                                </h3>
+
+                                {/* Price */}
+                                <div className="flex items-baseline gap-2 mb-3">
+                                    <span className="text-black font-bold text-xl">₹{p.price}</span>
+                                    {p.discount_pct > 0 && (
+                                        <span className="text-neutral-400 line-through text-sm">
+                                            ₹{(p.price / (1 - p.discount_pct / 100)).toFixed(2)}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Stock Info */}
+                                <div className={`text-sm mb-3 font-medium ${p.stock_count < 10 ? 'text-red-600' : 'text-emerald-600'}`}>
+                                    {p.stock_count < 10 ? '⚠️' : '✓'} Stock: {p.stock_count} units
+                                </div>
+
+                                {/* Combo Offer */}
+                                {p.combo_offer && (
+                                    <div className="mb-4 text-xs bg-blue-50 text-blue-700 px-3 py-2 rounded-lg border border-blue-200 font-medium">
+                                        🎁 {p.combo_offer}
+                                    </div>
+                                )}
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-2 pt-3 border-t border-neutral-100">
+                                    <button
+                                        onClick={() => handleEditProduct(p)}
+                                        className="flex-1 bg-neutral-100 text-black px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-neutral-200 transition-colors font-semibold text-sm"
+                                    >
+                                        <Edit size={16} /> Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteProduct(p.product_id)}
+                                        className="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                        <Trash size={16} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <button onClick={() => handleDeleteProduct(p.product_id)} className="text-neutral-600 hover:text-red-400 p-2">
-                            <Trash size={18} />
-                        </button>
+                    ))}
+                </div>
+            ) : (
+                /* Empty State */
+                <div className="text-center py-20 bg-neutral-50 rounded-2xl border-2 border-dashed border-neutral-200">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-20 h-20 bg-neutral-200 rounded-full flex items-center justify-center">
+                            <Package size={40} className="text-neutral-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-bold text-neutral-700 mb-2">No Products Yet</h3>
+                            <p className="text-neutral-500 mb-6">Start building your catalog by adding your first product</p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleAddProduct}
+                                className="bg-white text-black px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-neutral-100 border border-neutral-200 shadow-sm"
+                            >
+                                <Plus size={18} /> Add Your First Product
+                            </button>
+                            <button
+                                onClick={() => setShowBulkUpload(true)}
+                                className="bg-neutral-800 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-neutral-700"
+                            >
+                                <Upload size={18} /> Upload CSV
+                            </button>
+                        </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            )}
         </div>
     );
 
@@ -369,6 +502,28 @@ export default function RetailerDashboard() {
                 {view === 'shelf' && <ShelfLayoutView />}
                 {view === 'returns' && <ReturnsView />}
             </main>
+
+            {/* Modals */}
+            {showProductForm && (
+                <ProductForm
+                    mode={editingProduct ? 'edit' : 'add'}
+                    product={editingProduct}
+                    retailerId={rid}
+                    onClose={() => {
+                        setShowProductForm(false);
+                        setEditingProduct(null);
+                    }}
+                    onSuccess={handleProductSuccess}
+                />
+            )}
+
+            {showBulkUpload && (
+                <BulkUpload
+                    retailerId={rid}
+                    onClose={() => setShowBulkUpload(false)}
+                    onSuccess={handleBulkUploadSuccess}
+                />
+            )}
         </div>
     );
 }

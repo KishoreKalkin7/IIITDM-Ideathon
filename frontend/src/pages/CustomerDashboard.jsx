@@ -214,14 +214,54 @@ export default function CustomerDashboard() {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {recs.map(p => (
-                    <div key={p.product_id} className="bg-neutral-900 border border-neutral-800 p-5 rounded-3xl group hover:border-neutral-600 transition-all relative overflow-hidden">
-                        <div className="aspect-square bg-neutral-800 rounded-2xl mb-4 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform">📦</div>
-                        <h3 className="text-white font-bold truncate mb-1">{p.name}</h3>
-                        <div className="text-neutral-500 text-sm mb-4">₹{p.price}</div>
-                        <button onClick={() => addToCart(p.product_id)} className="w-full bg-white text-black py-2 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-neutral-200">
-                            <Plus size={18} /> Add
-                        </button>
-                        {p.explanation && <div className="mt-3 text-[10px] uppercase font-bold text-blue-400 opacity-60 tracking-wider flex items-center gap-1"><Zap size={10} /> {p.explanation}</div>}
+                    <div key={p.product_id} className="bg-neutral-900 border border-neutral-800 rounded-3xl group hover:border-neutral-600 transition-all relative overflow-hidden">
+                        {/* Product Image */}
+                        {p.imageUrl ? (
+                            <div className="aspect-square bg-neutral-800 rounded-t-3xl overflow-hidden">
+                                <img
+                                    src={p.imageUrl}
+                                    alt={p.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                            </div>
+                        ) : (
+                            <div className="aspect-square bg-neutral-800 rounded-t-3xl flex items-center justify-center text-5xl group-hover:scale-110 transition-transform">📦</div>
+                        )}
+
+                        {/* Discount Badge */}
+                        {p.discount && p.discount > 0 && (
+                            <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg">
+                                {p.discount}% OFF
+                            </div>
+                        )}
+
+                        <div className="p-5">
+                            <h3 className="text-white font-bold truncate mb-1">{p.name}</h3>
+                            <div className="text-neutral-500 text-xs mb-1 uppercase">{p.category}</div>
+
+                            {/* Price with discount */}
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="text-white font-bold text-lg">₹{p.price}</span>
+                                {p.discount && p.discount > 0 && (
+                                    <span className="text-neutral-600 line-through text-sm">
+                                        ₹{(p.price / (1 - p.discount / 100)).toFixed(2)}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Combo Offer */}
+                            {p.combo_offer && (
+                                <div className="mb-3 text-xs bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20">
+                                    🎁 {p.combo_offer}
+                                </div>
+                            )}
+
+                            <button onClick={() => addToCart(p.product_id)} className="w-full bg-white text-black py-2 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-neutral-200 transition-colors">
+                                <Plus size={18} /> Add
+                            </button>
+
+                            {p.explanation && <div className="mt-3 text-[10px] uppercase font-bold text-blue-400 opacity-60 tracking-wider flex items-center gap-1"><Zap size={10} /> {p.explanation}</div>}
+                        </div>
                     </div>
                 ))}
             </div>

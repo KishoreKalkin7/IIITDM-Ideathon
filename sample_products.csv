@@ -1,0 +1,15 @@
+name,category,price,stock,discount,combo_offer
+Coca Cola 500ml,Beverages,40.00,100,5,
+Pepsi 500ml,Beverages,40.00,80,5,
+Lay's Classic Chips,Junk,20.00,150,0,Buy 2 Get 1
+Doritos Nacho,Junk,45.00,120,10,
+Organic Milk 1L,Healthy,60.00,50,0,
+Mixed Fruit Juice,Healthy,80.00,40,15,
+Bread Loaf,Essentials,35.00,80,0,
+Rice 5kg,Essentials,250.00,30,5,
+Dove Soap,Personal Care,45.00,100,0,
+Colgate Toothpaste,Personal Care,85.00,90,10,
+Sunflower Oil 1L,Daily Groceries,180.00,60,0,
+Tata Tea Gold,Daily Groceries,450.00,40,8,Buy 1kg Get 250g Free
+Good Day Biscuits,Packaged Foods,20.00,200,0,
+Maggi Noodles,Packaged Foods,12.00,250,5,Pack of 5 for ₹50
