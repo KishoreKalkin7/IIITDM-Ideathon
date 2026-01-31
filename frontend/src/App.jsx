@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import CustomerDashboard from "./pages/CustomerDashboard";
+import CustomerLogin from "./pages/CustomerLogin";
 import RetailerDashboard from "./pages/RetailerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -13,7 +14,7 @@ export default function App() {
         <Route path="/auth" element={<Auth />} />
 
         {/* Aligned Routes to use unified Auth */}
-        <Route path="/customer/login" element={<Navigate to="/auth" />} />
+        <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/retailer/login" element={<Navigate to="/auth" />} />
         <Route path="/admin/login" element={<Navigate to="/auth" />} />
 

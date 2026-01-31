@@ -1,14 +1,14 @@
 product_id,retailer_id,name,category,price,stock_count,discount_pct,is_essential,active
-P0001,R001,Daily Item 1 (Premium),Essentials,463.0,37,25,1,True
-P0002,R001,Drink 2 (Standard),Beverages,61.0,43,14,0,True
-P0003,R001,Daily Item 3 (Fresh),Essentials,525.0,15,19,1,True
+P0001,R001,Daily Item 1 (Premium),Essentials,463.0,32,25,1,True
+P0002,R001,Drink 2 (Standard),Beverages,61.0,41,14,0,True
+P0003,R001,Daily Item 3 (Fresh),Essentials,525.0,13,19,1,True
 P0004,R001,Snack 4 (Pack),Junk,70.0,43,0,0,True
 P0005,R001,Daily Item 5 (Pack),Essentials,554.0,2,0,1,True
-P0006,R001,Salad/Fruit 6 (Standard),Healthy,120.0,8,8,1,True
+P0006,R001,Salad/Fruit 6 (Standard),Healthy,120.0,7,8,1,True
 P0007,R001,Drink 7 (Standard),Beverages,53.0,49,0,0,True
 P0008,R001,Snack 8 (Pack),Junk,72.0,1,0,0,True
 P0009,R001,Salad/Fruit 9 (Premium),Healthy,1055.0,6,0,1,True
-P0010,R001,Daily Item 10 (Premium),Essentials,84.0,13,0,1,True
+P0010,R001,Daily Item 10 (Premium),Essentials,84.0,12,0,1,True
 P0011,R001,Snack 11 (Fresh),Junk,379.0,3,0,0,True
 P0012,R001,Snack 12 (Premium),Junk,73.0,41,0,0,True
 P0013,R001,Drink 13 (Pack),Beverages,230.0,17,0,0,True
@@ -163,4 +163,4 @@ P0161,R009,Bulk Item 1,Essentials,50.0,100,0,0,True
 P0162,R009,Bulk Item 2,Junk,20.0,50,0,0,True
 P0163,R010,Bulk Item 1,Essentials,999.0,10,0,0,True
 P0164,R010,Bulk Item 2,Junk,20.0,50,0,0,True
-P0165,R001,Campa,Beverages,20.0,37,0,0,True
+P0165,R001,Campa,Beverages,20.0,36,0,0,True
