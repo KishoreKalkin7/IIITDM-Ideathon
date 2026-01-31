@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
-import { Lock, Mail, Chrome, ArrowRight, ShoppingBag, ShieldCheck, Store, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, Chrome, ArrowRight, ShoppingBag, ShieldCheck, Store, Eye, EyeOff, Sparkles } from "lucide-react";
 
 export default function AuthPage() {
-    const [role, setRole] = useState("customer"); // customer, retailer, admin
-    const [mode, setMode] = useState("login"); // login, signup
+    const [role, setRole] = useState("customer");
+    const [mode, setMode] = useState("login");
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -71,108 +71,118 @@ export default function AuthPage() {
 
     const RoleCard = ({ id, icon: Icon, label, desc }) => (
         <button
+            type="button"
             onClick={() => setRole(id)}
-            className={`flex flex-col items-center p-6 rounded-2xl border transition-all w-full text-left
+            className={`flex flex-col items-center p-4 rounded-3xl border transition-all duration-300 group
            ${role === id
-                    ? 'bg-white text-black border-white shadow-[0_0_30px_rgba(255,255,255,0.3)] transform scale-105'
-                    : 'bg-neutral-900/50 text-neutral-400 border-neutral-800 hover:bg-neutral-800'}`}
+                    ? 'bg-white border-primary shadow-xl shadow-primary/5 scale-105'
+                    : 'bg-slate-50 border-slate-100 text-slate-400 hover:bg-white hover:border-slate-200'}`}
         >
-            <div className={`p-3 rounded-xl mb-4 ${role === id ? 'bg-black text-white' : 'bg-neutral-800 text-neutral-500'}`}>
-                <Icon size={24} />
+            <div className={`p-3 rounded-2xl mb-3 transition-colors ${role === id ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500 group-hover:bg-slate-300'}`}>
+                <Icon size={20} />
             </div>
-            <h3 className="font-bold text-lg mb-1">{label}</h3>
-            <p className="text-xs opacity-70 text-center">{desc}</p>
+            <h3 className={`font-bold text-sm mb-1 ${role === id ? 'text-slate-900' : 'text-slate-500'}`}>{label}</h3>
+            <p className="text-[10px] opacity-60 text-center leading-tight">{desc}</p>
         </button>
     );
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Background Effects */}
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800/30 via-black to-black z-0 pointer-events-none"></div>
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-6 relative overflow-hidden">
+            {/* Background Decorative Elements */}
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse delay-700"></div>
 
-            <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 z-10">
+            <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 z-10 items-center">
+
                 {/* Intro Side */}
-                <div className="flex flex-col justify-center space-y-8 p-4">
-                    <div className="space-y-2">
-                        <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-neutral-500">
-                            Smart Retail.
+                <div className="flex flex-col space-y-10 p-4">
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-widest animate-bounce">
+                            <Sparkles size={14} /> Intelligence for Retail
+                        </div>
+                        <h1 className="text-6xl font-black text-slate-800 leading-[1.1] tracking-tight">
+                            Smart <br /><span className="text-secondary italic">Retail.</span>
                         </h1>
-                        <p className="text-xl text-neutral-400">The next generation of connected commerce.</p>
+                        <p className="text-lg text-slate-500 max-w-md">Experience the future of commerce with AI-driven insights and seamless operations.</p>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4">
                         <RoleCard id="admin" icon={ShieldCheck} label="Admin" desc="Governance & Control" />
-                        <RoleCard id="customer" icon={ShoppingBag} label="Customer" desc="Shop & Personalise" />
-                        <RoleCard id="retailer" icon={Store} label="Retailer" desc="Manage & Optimize" />
+                        <RoleCard id="customer" icon={ShoppingBag} label="Customer" desc="Shop & Discover" />
+                        <RoleCard id="retailer" icon={Store} label="Retailer" desc="Growth & Metrics" />
                     </div>
                 </div>
 
                 {/* Auth Form Side */}
-                <div className="bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col justify-center">
-                    <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold mb-2">
-                            {mode === 'login' ? `Login to ${role.charAt(0).toUpperCase() + role.slice(1)}` : `Join as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
+                <div className="premium-card p-10 lg:p-12">
+                    <div className="mb-10 text-center">
+                        <h2 className="text-3xl font-black text-slate-900 mb-2">
+                            {mode === 'login' ? `Welcome Back` : `Getting Started`}
                         </h2>
-                        <p className="text-neutral-500 text-sm">Access your secure dashboard</p>
+                        <p className="text-slate-400 text-sm">
+                            {mode === 'login' ? `Sign in to your ${role} portal` : `Create your ${role} account today`}
+                        </p>
                     </div>
 
                     <button
                         onClick={handleGoogle}
-                        className="w-full bg-white text-black py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-neutral-200 transition-colors mb-6"
+                        className="w-full bg-slate-50 text-slate-700 border border-slate-200 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition-all mb-8 shadow-sm group"
                     >
-                        {loading ? <span className="animate-spin">⌛</span> : <Chrome size={20} />}
-                        Continue with Google
+                        {loading ? <span className="animate-spin text-primary">⌛</span> : <Chrome size={20} className="text-secondary" />}
+                        Continue with Identity
                     </button>
 
-                    <div className="relative mb-6">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
-                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-black px-2 text-neutral-500">Or continue with Email</span></div>
+                    <div className="relative mb-8">
+                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest"><span className="bg-white px-4 text-slate-300">Or use your email</span></div>
                     </div>
 
-                    <form onSubmit={handleEmail} className="space-y-4">
+                    <form onSubmit={handleEmail} className="space-y-5">
                         <div className="space-y-2">
-                            <label className="text-xs text-neutral-500 ml-1">Email Address</label>
+                            <label className="text-xs font-bold text-slate-500 ml-1">Work Email</label>
                             <div className="relative">
-                                <Mail className="absolute left-4 top-3.5 text-neutral-500" size={18} />
-                                <input name="email" type="email" placeholder="name@example.com" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-12 pr-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
+                                <Mail className="absolute left-5 top-4 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
+                                <input name="email" type="email" placeholder="name@company.com" className="w-full pl-14" required />
                             </div>
                         </div>
+
                         {mode === 'signup' && (
                             <div className="space-y-2">
-                                <label className="text-xs text-neutral-500 ml-1">Full Name</label>
-                                <input name="name" type="text" placeholder="John Doe" className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 px-4 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700" required />
+                                <label className="text-xs font-bold text-slate-500 ml-1">Display Name</label>
+                                <input name="name" type="text" placeholder="Your full name" className="w-full" required />
                             </div>
                         )}
+
                         <div className="space-y-2">
-                            <label className="text-xs text-neutral-500 ml-1">Password</label>
+                            <label className="text-xs font-bold text-slate-500 ml-1">Secure Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-3.5 text-neutral-500" size={18} />
+                                <Lock className="absolute left-5 top-4 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
                                 <input
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
-                                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-12 pr-12 focus:ring-2 ring-white/20 outline-none transition-all placeholder:text-neutral-700"
+                                    className="w-full pl-14 pr-14"
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-3.5 text-neutral-500 hover:text-white transition-colors"
+                                    className="absolute right-5 top-4 text-slate-400 hover:text-primary transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                         </div>
 
-                        <button type="submit" disabled={loading} className="w-full bg-neutral-800 text-white border border-neutral-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-neutral-700 transition-all mt-4">
-                            {loading ? "Verifying..." : (mode === 'login' ? "Sign In" : "Create Account")} <ArrowRight size={18} />
+                        <button type="submit" disabled={loading} className="primary w-full mt-6 py-5">
+                            {loading ? "Authenticating..." : (mode === 'login' ? "Sign In" : "Get Started Now")} <ArrowRight size={18} className="inline ml-2" />
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center text-sm text-neutral-500">
-                        {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
-                        <button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')} className="text-white hover:underline font-medium">
-                            {mode === 'login' ? "Sign up" : "Log in"}
+                    <div className="mt-10 text-center text-sm text-slate-500">
+                        {mode === 'login' ? "Don't have an account? " : "Already registered? "}
+                        <button onClick={() => setMode(mode === 'login' ? 'signup' : 'login')} className="text-primary hover:underline font-bold">
+                            {mode === 'login' ? "Join the community" : "Log into account"}
                         </button>
                     </div>
                 </div>

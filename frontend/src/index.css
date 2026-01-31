@@ -1,74 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --background: 204 45% 94%;
+    /* Soft Sky Grey #EBF2F6 */
+    --foreground: 215 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 47% 11%;
+    --primary: 208 37% 41%;
+    /* Coastal Dark Blue #426B8E */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 212 85% 76%;
+    /* Bright Sky Blue #8FBFF6 */
+    --secondary-foreground: 208 37% 41%;
+    --muted: 215 30% 92%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 61 41% 49%;
+    /* Olive Gold #AFB14A */
+    --accent-foreground: 215 47% 11%;
+    --success: 88 37% 72%;
+    /* Sage Green #B9D19E */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 208 37% 41%;
+    --radius: 1.5rem;
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply bg-[#F7F9FC] text-foreground;
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-/* High Contrast Mode */
 .high-contrast {
-  filter: contrast(1.5) brightness(1.1);
-}
-
-.high-contrast body {
-  background: #000 !important;
-  color: #fff !important;
-}
-
-.high-contrast .bg-neutral-900,
-.high-contrast .bg-neutral-950,
-.high-contrast .bg-black {
-  background: #000 !important;
-  border: 2px solid #fff !important;
-}
-
-.high-contrast .text-neutral-500,
-.high-contrast .text-neutral-400 {
-  color: #ccc !important;
-}
-
-.high-contrast button {
-  border: 2px solid #fff !important;
-  font-weight: 900 !important;
-}
-
-.high-contrast .text-blue-400,
-.high-contrast .text-emerald-500,
-.high-contrast .text-purple-500 {
-  color: #ffff00 !important;
-  /* Stark Yellow */
+  filter: contrast(1.2) saturate(1.2);
 }
 
 .glass-panel {
-  @apply bg-black/40 backdrop-blur-md border border-white/10 shadow-xl;
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl shadow-slate-200/50;
 }
 
-.matt-card {
-  @apply bg-[#111] border border-[#222] shadow-sm hover:border-[#333] transition-colors;
+.premium-card {
+  @apply bg-white border border-slate-100 rounded-[1.5rem] transition-all duration-300;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+.premium-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  @apply border-primary/10;
+}
+
+.nav-link-active {
+  @apply bg-primary text-white shadow-lg shadow-primary/20;
+}
+
+.stat-card {
+  @apply bg-white p-6 rounded-[2rem] border border-slate-50 shadow-sm;
+}
+
+input,
+select {
+  @apply bg-slate-50 border-slate-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all;
+}
+
+button.primary {
+  @apply bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all;
 }
